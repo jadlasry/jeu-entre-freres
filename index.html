@@ -19,10 +19,10 @@
     --secondary-glow: rgba(255, 0, 127, 0.4);
     --yellow: #ffe600;
     --bg: #05070f;
-    --panel-bg: rgba(12, 16, 32, 0.75);
-    --panel-border: rgba(0, 240, 255, 0.25);
-    --card-w: 65px;
-    --card-h: 95px;
+    --panel-bg: rgba(12, 16, 32, 0.88);
+    --panel-border: rgba(0, 240, 255, 0.3);
+    --card-w: 68px;
+    --card-h: 100px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Rajdhani', sans-serif; }
@@ -35,68 +35,51 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
+    padding: 10px;
   }
 
-  /* CANVAS CANVAS DE PARTICULES INTERACTIF */
   #bgCanvas {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     z-index: 0; pointer-events: none;
   }
 
-  /* CONTAINER GLASSMORPHISM CYBER */
   .cyber-panel {
     position: relative; z-index: 10;
-    width: 92vw; max-width: 900px;
+    width: 95vw; max-width: 880px;
     background: var(--panel-bg);
     backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--panel-border);
     border-radius: 24px;
-    padding: 28px;
-    box-shadow: 0 0 50px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);
-    animation: panelAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 24px;
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
   }
 
-  @keyframes panelAppear {
-    from { opacity: 0; transform: scale(0.9) translateY(30px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  /* TITRES & HEADER */
-  .title-container { text-align: center; margin-bottom: 20px; }
+  .title-container { text-align: center; margin-bottom: 16px; }
   .cyber-title {
     font-family: 'Orbitron', sans-serif;
-    font-size: 2.2rem; font-weight: 900;
-    letter-spacing: 3px;
+    font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
     background: linear-gradient(135deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px var(--primary-glow);
   }
-  .cyber-subtitle {
-    color: #8a99ad; font-size: 1rem; font-weight: 600; letter-spacing: 1px; margin-top: 4px;
-  }
+  .cyber-subtitle { color: #8a99ad; font-size: 0.95rem; font-weight: 600; margin-top: 4px; }
 
-  /* BOUTONS ET INPUTS CYBER */
   .cyber-input {
     width: 100%; padding: 14px 18px; border-radius: 14px;
     border: 1px solid rgba(0, 240, 255, 0.3);
     background: rgba(5, 7, 15, 0.8);
     color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 1rem;
-    text-align: center; outline: none; transition: 0.3s;
-    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+    text-align: center; outline: none; margin-bottom: 12px;
   }
-  .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
   .cyber-btn {
-    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    width: 100%; padding: 14px; border-radius: 14px; border: none;
     background: linear-gradient(135deg, var(--primary), #0072ff);
-    color: #000; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900;
-    letter-spacing: 2px; cursor: pointer; transition: all 0.2s ease;
-    box-shadow: 0 0 20px var(--primary-glow); margin-top: 12px;
+    color: #000; font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 900;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.2s ease;
+    box-shadow: 0 0 20px var(--primary-glow); margin-top: 8px;
   }
-  .cyber-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
-  .cyber-btn:active { transform: scale(0.98); }
   .cyber-btn.pink {
     background: linear-gradient(135deg, var(--secondary), #ff0040);
     color: #fff; box-shadow: 0 0 20px var(--secondary-glow);
@@ -105,126 +88,115 @@
     background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border);
     color: #fff; box-shadow: none;
   }
-  .cyber-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+  .cyber-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* CATALOGUE DE JEUX EN 3D / GRILLE */
-  .category-filter {
-    display: flex; justify-content: center; gap: 10px; margin: 16px 0;
-  }
+  .category-filter { display: flex; justify-content: center; gap: 8px; margin: 14px 0 10px 0; }
   .chip {
-    padding: 6px 16px; border-radius: 20px; border: 1px solid var(--panel-border);
-    font-size: 0.85rem; font-weight: 700; cursor: pointer; background: rgba(255,255,255,0.03); transition: 0.3s;
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--panel-border);
+    font-size: 0.8rem; font-weight: 700; cursor: pointer; background: rgba(255,255,255,0.03);
   }
-  .chip.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
+  .chip.active { background: var(--primary); color: #000; border-color: var(--primary); }
 
   .games-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 14px; max-height: 320px; overflow-y: auto; padding-right: 6px; margin-top: 12px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px; max-height: 290px; overflow-y: auto; padding-right: 4px; margin-top: 10px;
   }
   .game-card {
     background: rgba(255, 255, 255, 0.03); border: 1px solid var(--panel-border);
-    border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden;
-  }
-  .game-card:hover {
-    background: rgba(0, 240, 255, 0.1); border-color: var(--primary);
-    transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 25px rgba(0, 240, 255, 0.2);
+    border-radius: 14px; padding: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; transition: 0.2s;
   }
   .game-card.selected {
     background: rgba(255, 0, 127, 0.2); border-color: var(--secondary);
-    box-shadow: 0 0 20px var(--secondary-glow);
   }
-  .game-icon { font-size: 2rem; }
-  .game-info h3 { font-size: 1rem; font-weight: 700; color: #fff; }
+  .game-icon { font-size: 1.8rem; }
+  .game-info h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
   .game-info p { font-size: 0.75rem; color: #8a99ad; }
 
-  /* PLATEAU DE JEU TABLE UNO 3D IMMERSIVE */
+  /* PLATEAU DE JEU UNO */
   #gameArena {
-    position: relative; width: 100vw; height: 100vh; max-width: 950px; max-height: 620px;
+    position: relative; width: 100vw; height: 100vh; max-width: 920px; max-height: 600px;
     background: radial-gradient(circle, #1a233a 0%, #0a0d18 80%);
-    border: 2px solid var(--primary); border-radius: 40px;
-    box-shadow: inset 0 0 80px rgba(0, 240, 255, 0.15), 0 0 50px rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--primary); border-radius: 36px;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
 
   .room-badge {
-    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.6); border: 1px solid var(--primary);
-    padding: 6px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem; letter-spacing: 2px; color: var(--primary); box-shadow: 0 0 10px var(--primary-glow);
+    padding: 4px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem; color: var(--primary);
   }
 
-  /* AVATARS EN 4 COINS DE TABLE */
   .cyber-avatar {
-    position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: 0.3s;
+    position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10;
   }
   .avatar-ring {
-    width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 55px; height: 55px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
     background: rgba(12, 16, 32, 0.8); display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); position: relative;
+    font-size: 1.6rem;
   }
   .avatar-label {
-    font-size: 0.8rem; font-weight: 700; margin-top: 6px;
-    background: rgba(0, 0, 0, 0.7); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.75rem; font-weight: 700; margin-top: 4px;
+    background: rgba(0, 0, 0, 0.7); padding: 2px 8px; border-radius: 10px;
   }
   .cyber-avatar.active .avatar-ring {
-    border-color: var(--yellow); box-shadow: 0 0 25px var(--yellow); animation: activeGlow 1.2s infinite alternate;
+    border-color: var(--yellow); box-shadow: 0 0 20px var(--yellow);
   }
-  @keyframes activeGlow { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-  .pos-bottom { bottom: 20px; }
-  .pos-top { top: 20px; }
-  .pos-left { left: 20px; }
-  .pos-right { right: 20px; }
+  .pos-bottom { bottom: 15px; }
+  .pos-top { top: 15px; }
+  .pos-left { left: 15px; }
+  .pos-right { right: 15px; }
 
-  /* CENTRE DE TABLE : PIOCHE ET TALLON */
-  .table-center { display: flex; gap: 24px; align-items: center; justify-content: center; z-index: 5; }
+  .table-center { display: flex; gap: 20px; align-items: center; justify-content: center; z-index: 5; }
 
-  /* CARTES UNO NEON */
   .uno-card {
-    width: var(--card-w); height: var(--card-h); border-radius: 10px;
+    width: var(--card-w); height: var(--card-h); border-radius: 8px;
     border: 2px solid #fff; background: #0c1020;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900;
-    box-shadow: -4px 8px 15px rgba(0, 0, 0, 0.6); cursor: pointer; transition: all 0.25s ease;
+    font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 900;
+    cursor: pointer; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   }
-  .uno-card.red { background: linear-gradient(135deg, #ff3b30, #990000); border-color: #ff9999; }
-  .uno-card.blue { background: linear-gradient(135deg, #007aff, #003399); border-color: #99ccff; }
-  .uno-card.green { background: linear-gradient(135deg, #34c759, #006622); border-color: #99ffbb; }
-  .uno-card.yellow { background: linear-gradient(135deg, #ffcc00, #997700); border-color: #fffae6; color: #000; }
+  .uno-card.red { background: linear-gradient(135deg, #ff3b30, #990000); }
+  .uno-card.blue { background: linear-gradient(135deg, #007aff, #003399); }
+  .uno-card.green { background: linear-gradient(135deg, #34c759, #006622); }
+  .uno-card.yellow { background: linear-gradient(135deg, #ffcc00, #997700); color: #000; }
+  .uno-card.wild { background: linear-gradient(135deg, #ff007f, #00f0ff, #ffe600, #34c759); }
   .uno-card.back {
     background: repeating-linear-gradient(45deg, var(--secondary), var(--secondary) 10px, #000 10px, #000 20px);
-    border-color: #fff;
   }
-  .uno-card:hover { transform: translateY(-12px) scale(1.08); box-shadow: 0 15px 30px rgba(0, 240, 255, 0.4); }
 
-  /* MAIN DE CARTES DU JOUEUR */
   .player-hand {
-    position: absolute; bottom: 85px; display: flex; gap: -20px;
-    max-width: 88%; overflow-x: auto; padding: 12px; z-index: 20;
+    position: absolute; bottom: 75px; display: flex;
+    max-width: 88%; overflow-x: auto; padding: 10px; z-index: 20;
   }
-  .player-hand .uno-card { margin-left: -22px; }
+  .player-hand .uno-card { margin-left: -20px; }
   .player-hand .uno-card:first-child { margin-left: 0; }
 
-  /* BOUTON BOOSTER UNO */
   .uno-trigger {
-    position: absolute; bottom: 24px; right: 24px; width: 75px; height: 75px; border-radius: 50%;
+    position: absolute; bottom: 20px; right: 20px; width: 65px; height: 65px; border-radius: 50%;
     background: linear-gradient(135deg, var(--secondary), #ff0040);
-    border: 3px solid #fff; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900;
-    font-size: 1.1rem; box-shadow: 0 0 30px var(--secondary-glow); cursor: pointer; z-index: 30; transition: 0.2s;
+    border: 2px solid #fff; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900;
+    font-size: 1rem; cursor: pointer; z-index: 30;
   }
-  .uno-trigger:active { transform: scale(0.9); }
+
+  /* CHOIX DE COULEUR POUR JOKER */
+  .color-picker {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9); padding: 16px; border-radius: 20px; border: 2px solid var(--primary);
+    display: grid; grid-template-columns: repeat(2, 60px); gap: 10px; z-index: 50;
+  }
+  .color-btn { width: 60px; height: 60px; border-radius: 12px; cursor: pointer; border: 2px solid #fff; }
 
   .hidden { display: none !important; }
 
-  /* SIGNATURE BADGE FOTTER */
   .cyber-footer {
-    position: relative; z-index: 10; margin-top: 20px;
+    position: relative; z-index: 10; margin-top: 16px;
     font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 900;
-    letter-spacing: 3px; text-transform: uppercase; text-align: center;
-    color: #fff; background: rgba(0, 240, 255, 0.08); padding: 8px 24px;
+    letter-spacing: 2px; text-transform: uppercase; text-align: center;
+    color: #fff; background: rgba(0, 240, 255, 0.08); padding: 8px 20px;
     border-radius: 30px; border: 1px solid var(--primary-glow);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
   }
 </style>
 </head>
@@ -241,57 +213,60 @@
 
   <input type="text" class="cyber-input" id="playerName" placeholder="TON PSEUDO" maxlength="12" value="Jad" />
 
-  <div style="display:flex; gap:10px; margin-top:14px;">
+  <div style="display:flex; gap:10px;">
     <button class="cyber-btn" onclick="toggleMode('create')">➕ CRÉER UN SALON</button>
     <button class="cyber-btn secondary" onclick="toggleMode('join')">🔗 REJOINDRE</button>
   </div>
 
-  <!-- SECTEUR CRÉATION DE JEU -->
+  <!-- CRÉATION -->
   <div id="createSection" class="hidden">
     <div class="category-filter">
       <div class="chip active" onclick="filterGames('all', this)">TOUS (12)</div>
       <div class="chip" onclick="filterGames('cards', this)">CARTES</div>
-      <div class="chip" onclick="filterGames('reflex', this)">RÉFLEXION</div>
+      <div class="chip" onclick="filterGames('poki', this)">POKI BEST</div>
     </div>
 
     <div class="games-grid" id="gamesGrid"></div>
     <button class="cyber-btn pink" id="btnLaunch" onclick="initRoom()" disabled>LANCER LE SALON</button>
   </div>
 
-  <!-- SECTEUR REJOINDRE -->
+  <!-- REJOINDRE -->
   <div id="joinSection" class="hidden" style="margin-top:16px;">
     <input type="text" class="cyber-input" id="roomInput" placeholder="CODE DE SALON (EX: 7F3K2A)" maxlength="6" />
     <button class="cyber-btn pink" onclick="connectRoom()">ENTRER DANS LA PARTIE</button>
   </div>
 </div>
 
-<!-- PLATEAU DE JEU MULTIJOUEURS -->
+<!-- PLATEAU UNO -->
 <div id="gameArena" class="hidden">
   <div class="room-badge" id="badgeRoom">SALON : ------</div>
 
-  <!-- 4 POSITIONS DES JOUEURS -->
   <div class="cyber-avatar pos-bottom" id="slot0"><div class="avatar-ring">🧙‍♂️</div><div class="avatar-label" id="lbl0">Toi</div></div>
   <div class="cyber-avatar pos-top" id="slot1"><div class="avatar-ring">🥷</div><div class="avatar-label" id="lbl1">En attente...</div></div>
   <div class="cyber-avatar pos-left" id="slot2"><div class="avatar-ring">🦸‍♂️</div><div class="avatar-label" id="lbl2">En attente...</div></div>
   <div class="cyber-avatar pos-right" id="slot3"><div class="avatar-ring">🤖</div><div class="avatar-label" id="lbl3">En attente...</div></div>
 
-  <!-- PIOCHE ET TALLON CENTRAL -->
   <div class="table-center">
     <div class="uno-card back" onclick="drawUnoCard()" title="Piocher"></div>
     <div class="uno-card red" id="tablePile">8</div>
   </div>
 
-  <!-- MAIN DU JOUEUR -->
   <div class="player-hand" id="handBox"></div>
-
-  <!-- BOUTON UNO -->
   <button class="uno-trigger" onclick="shoutUno()">UNO!</button>
+
+  <!-- SELECTEUR DE COULEUR -->
+  <div class="color-picker hidden" id="colorPicker">
+    <div class="color-btn" style="background:#ff3b30" onclick="chooseColor('red')"></div>
+    <div class="color-btn" style="background:#007aff" onclick="chooseColor('blue')"></div>
+    <div class="color-btn" style="background:#34c759" onclick="chooseColor('green')"></div>
+    <div class="color-btn" style="background:#ffcc00" onclick="chooseColor('yellow')"></div>
+  </div>
 </div>
 
 <div class="cyber-footer">DÉVELOPPÉ PAR J.LSRY63</div>
 
 <script>
-/* ANIMATION PARTICULES BACKGROUND CANVAS */
+/* CANVAS ANIMATION PARTICULES */
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let pts = [];
@@ -299,7 +274,7 @@ let pts = [];
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.onresize = resizeCanvas; resizeCanvas();
 
-for(let i=0; i<60; i++) {
+for(let i=0; i<50; i++) {
   pts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.8, vy: (Math.random()-0.5)*0.8 });
 }
 
@@ -316,7 +291,7 @@ function animCanvas() {
 }
 animCanvas();
 
-/* FIREBASE CONFIGURATION */
+/* FIREBASE INITIALIZATION */
 const firebaseConfig = {
   apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
   authDomain: "jeu-entre-freres.firebaseapp.com",
@@ -329,25 +304,25 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let myId = 'p_' + Math.random().toString(36).slice(2,8);
-let currentRoom = null, unsub = null, chosenGame = null;
+let currentRoom = null, unsub = null, chosenGame = null, pendingCard = null;
 
 const CATALOG = [
-  { id: 'uno', name: '🎴 UNO Online', desc: '1-4 Joueurs • Jeu de cartes culte', type: 'cards' },
-  { id: 'cards_battle', name: '🃏 Bataille de Cartes', desc: '1-4 Joueurs • Rapidité & Chance', type: 'cards' },
-  { id: 'bac', name: '📝 Petit Bac', desc: '1-4 Joueurs • Jeu de mots en direct', type: 'reflex' },
-  { id: 'fast_click', name: '⚡ Tap Rapide', desc: '1-4 Joueurs • Test de réflexes', type: 'reflex' },
-  { id: 'xo', name: '⭕❌ Morpion 3D', desc: '2 Joueurs • Réfléchis vite', type: 'reflex' },
-  { id: 'p4', name: '🔴🟡 Puissance 4', desc: '2 Joueurs • Alignement stratégique', type: 'reflex' },
-  { id: 'rps', name: '✊✋✌️ Chifoumi', desc: '2-4 Joueurs • Duel classique', type: 'cards' },
-  { id: 'dice', name: '🎲 Course de Dés', desc: '1-4 Joueurs • Atteins 100 points', type: 'reflex' },
-  { id: 'memory', name: '🧠 Memory Flash', desc: '1-4 Joueurs • Retiens la suite', type: 'reflex' },
-  { id: 'guess', name: '🔢 Devine Nombre', desc: '1-4 Joueurs • Plus grand ou plus petit', type: 'reflex' },
-  { id: 'word', name: '🔤 Chaîne de Mots', desc: '1-4 Joueurs • Vocabulaire chrono', type: 'reflex' },
-  { id: 'quiz', name: '❓ Quiz Speed', desc: '1-4 Joueurs • Culture générale', type: 'reflex' }
+  { id: 'uno', name: '🎴 UNO Pro (Vraies Règles)', desc: '1-4 Joueurs • +2, +4, Inversement, Pass', type: 'cards' },
+  { id: 'cards_battle', name: '🃏 Bataille Cyber', desc: '1-4 Joueurs • Rapidité & Cartes', type: 'cards' },
+  { id: 'bac', name: '📝 Petit Bac Poki', desc: '1-4 Joueurs • Mots chrono en direct', type: 'poki' },
+  { id: 'fast_click', name: '⚡ Tap Reaction Poki', desc: '1-4 Joueurs • Test de réflexes milliseconde', type: 'poki' },
+  { id: 'xo', name: '⭕❌ Morpion Neon', desc: '2 Joueurs • Duel tactique', type: 'poki' },
+  { id: 'p4', name: '🔴🟡 Puissance 4 3D', desc: '2 Joueurs • Alignement parfait', type: 'poki' },
+  { id: 'rps', name: '✊✋✌️ Chifoumi Extreme', desc: '2-4 Joueurs • Battle royale', type: 'cards' },
+  { id: 'dice', name: '🎲 Course de Dés 100', desc: '1-4 Joueurs • Atteins la ligne d\'arrivée', type: 'poki' },
+  { id: 'memory', name: '🧠 Memory Simon Poki', desc: '1-4 Joueurs • Retiens la séquence', type: 'poki' },
+  { id: 'guess', name: '🔢 Devine Nombre Blitz', desc: '1-4 Joueurs • Plus grand ou plus petit', type: 'poki' },
+  { id: 'word', name: '🔤 Chaîne de Mots Poki', desc: '1-4 Joueurs • Vocabulaire sous pression', type: 'poki' },
+  { id: 'quiz', name: '❓ Quiz Speed Multi', desc: '1-4 Joueurs • Culture & Rapidité', type: 'poki' }
 ];
 
 const colors = ['red', 'blue', 'green', 'yellow'];
-const numbers = ['0','1','2','3','4','5','6','7','8','9','🚫','🔄'];
+const values = ['0','1','2','3','4','5','6','7','8','9','+2','🚫','🔄'];
 
 function renderGamesGrid(filter = 'all') {
   const grid = document.getElementById('gamesGrid'); grid.innerHTML = '';
@@ -382,8 +357,15 @@ function toggleMode(mode) {
   }
 }
 
-function genHand() {
-  let h = []; for(let i=0; i<7; i++) h.push({ color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] });
+function genUnoHand() {
+  let h = [];
+  for(let i=0; i<7; i++) {
+    if(Math.random() < 0.1) {
+      h.push({ color: 'wild', val: Math.random() > 0.5 ? '🌈' : '🌈+4' });
+    } else {
+      h.push({ color: colors[Math.floor(Math.random()*4)], val: values[Math.floor(Math.random()*values.length)] });
+    }
+  }
   return h;
 }
 
@@ -393,11 +375,7 @@ function initRoom() {
   const card = { color: colors[Math.floor(Math.random()*4)], val: Math.floor(Math.random()*9).toString() };
 
   db.collection('rooms').doc(currentRoom).set({
-    game: chosenGame,
-    players: [{ id: myId, name }],
-    turn: 0,
-    discard: card,
-    hands: { [myId]: genHand() }
+    game: chosenGame, players: [{ id: myId, name }], turn: 0, direction: 1, discard: card, hands: { [myId]: genUnoHand() }
   }).then(() => launchArena());
 }
 
@@ -415,7 +393,7 @@ function connectRoom() {
     if(!players.find(p=>p.id===myId)) players.push({ id: myId, name });
 
     let hands = d.hands || {};
-    if(!hands[myId]) hands[myId] = genHand();
+    if(!hands[myId]) hands[myId] = genUnoHand();
 
     ref.update({ players, hands }).then(() => {
       currentRoom = code; launchArena();
@@ -456,19 +434,67 @@ function updateUi(d) {
   });
 }
 
+function getNextTurn(currentTurn, direction, totalPlayers, skip = false) {
+  let step = skip ? 2 * direction : direction;
+  let next = (currentTurn + step) % totalPlayers;
+  if(next < 0) next += totalPlayers;
+  return next;
+}
+
 function playCard(card, idx, d) {
   let pIdx = d.players.findIndex(p => p.id === myId);
   if(d.turn !== pIdx) return alert("Attends ton tour !");
 
-  if(card.color === d.discard.color || card.val === d.discard.val) {
-    let newHand = [...d.hands[myId]]; newHand.splice(idx, 1);
-    let nextTurn = (d.turn + 1) % d.players.length;
-    db.collection('rooms').doc(currentRoom).update({
-      discard: card, [`hands.${myId}`]: newHand, turn: nextTurn
-    });
-  } else {
-    alert("Carte incompatible !");
+  if(card.color === 'wild') {
+    pendingCard = { card, idx, d };
+    document.getElementById('colorPicker').classList.remove('hidden');
+    return;
   }
+
+  if(card.color === d.discard.color || card.val === d.discard.val) {
+    executeMove(card, idx, d, card.color);
+  } else {
+    alert("Carte incompatible ! Joue la même couleur ou le même symbole.");
+  }
+}
+
+function chooseColor(color) {
+  document.getElementById('colorPicker').classList.add('hidden');
+  if(pendingCard) {
+    executeMove(pendingCard.card, pendingCard.idx, pendingCard.d, color);
+    pendingCard = null;
+  }
+}
+
+function executeMove(card, idx, d, targetColor) {
+  let newHand = [...d.hands[myId]]; newHand.splice(idx, 1);
+  let direction = d.direction || 1;
+  let skip = false;
+
+  if(card.val === '🔄') direction *= -1;
+  if(card.val === '🚫') skip = true;
+
+  let nextTurn = getNextTurn(d.turn, direction, d.players.length, skip);
+  let updateData = {
+    discard: { color: targetColor, val: card.val },
+    [`hands.${myId}`]: newHand,
+    turn: nextTurn,
+    direction: direction
+  };
+
+  // Traitement des Cartes +2 et +4
+  if(card.val === '+2' || card.val === '🌈+4') {
+    let count = card.val === '+2' ? 2 : 4;
+    let victimId = d.players[nextTurn].id;
+    let victimHand = [...(d.hands[victimId] || [])];
+    for(let i=0; i<count; i++) {
+      victimHand.push({ color: colors[Math.floor(Math.random()*4)], val: values[Math.floor(Math.random()*values.length)] });
+    }
+    updateData[`hands.${victimId}`] = victimHand;
+    updateData.turn = getNextTurn(nextTurn, direction, d.players.length, false);
+  }
+
+  db.collection('rooms').doc(currentRoom).update(updateData);
 }
 
 function drawUnoCard() {
@@ -477,9 +503,9 @@ function drawUnoCard() {
     let pIdx = d.players.findIndex(p => p.id === myId);
     if(d.turn !== pIdx) return alert("Attends ton tour !");
 
-    let card = { color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] };
+    let card = { color: colors[Math.floor(Math.random()*4)], val: values[Math.floor(Math.random()*values.length)] };
     let newHand = [...(d.hands[myId] || []), card];
-    let nextTurn = (d.turn + 1) % d.players.length;
+    let nextTurn = getNextTurn(d.turn, d.direction || 1, d.players.length, false);
 
     db.collection('rooms').doc(currentRoom).update({
       [`hands.${myId}`]: newHand, turn: nextTurn
