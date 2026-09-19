@@ -42,7 +42,7 @@
 
   #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
-  /* LOBBY / PANEL AVEC ANIMATION SWIPE */
+  /* LOBBY / PANEL AVEC ANIMATION */
   .cyber-panel {
     position: relative; z-index: 10; width: 95vw; max-width: 880px;
     background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -75,11 +75,14 @@
     width: 100%; padding: 15px; border-radius: 14px; border: none;
     background: linear-gradient(135deg, var(--primary), #0072ff); color: #000;
     font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 900;
-    letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 0 20px var(--primary-glow); margin-top: 8px;
   }
+  .cyber-btn:hover { transform: scale(1.03); box-shadow: 0 0 30px var(--primary-glow); }
   .cyber-btn.pink { background: linear-gradient(135deg, var(--secondary), #ff0040); color: #fff; box-shadow: 0 0 20px var(--secondary-glow); }
+  .cyber-btn.pink:hover { box-shadow: 0 0 30px var(--secondary-glow); }
   .cyber-btn.secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; box-shadow: none; }
+  .cyber-btn.green { background: linear-gradient(135deg, #34c759, #006622); color: #fff; box-shadow: 0 0 20px rgba(52, 199, 89, 0.4); }
   .cyber-btn:active { transform: scale(0.97); }
 
   /* SECTION ANIMÉE REJOINDRE / CRÉER */
@@ -88,8 +91,34 @@
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .animated-box.open {
-    max-height: 200px; opacity: 1; margin-top: 16px;
+    max-height: 250px; opacity: 1; margin-top: 16px;
   }
+
+  /* CHOIX DES JOUEURS AVEC ANIMATION D'AGRANDISSEMENT */
+  .player-choice-title {
+    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--primary);
+    text-align: center; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .player-options-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px;
+  }
+  .player-card-btn {
+    background: rgba(5, 7, 15, 0.8); border: 1px solid var(--panel-border);
+    border-radius: 14px; padding: 12px 8px; text-align: center; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .player-card-btn .num {
+    font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; color: #fff;
+  }
+  .player-card-btn .lbl {
+    font-size: 0.75rem; color: #8a99ad; font-weight: 700; margin-top: 2px;
+  }
+  .player-card-btn:hover {
+    transform: scale(1.08); border-color: var(--primary);
+    background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 20px var(--primary-glow);
+  }
+  .player-card-btn:active { transform: scale(0.95); }
 
   /* PLATEAU DE JEU UNO */
   #gameArena {
@@ -103,21 +132,41 @@
     position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.6); border: 1px solid var(--primary);
     padding: 4px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
-    font-size: 0.85rem; color: var(--primary);
+    font-size: 0.85rem; color: var(--primary); z-index: 30;
+  }
+
+  /* BOUTON DÉMARRER POUR L'HÔTE */
+  .host-controls {
+    position: absolute; top: 55px; left: 50%; transform: translateX(-50%);
+    z-index: 30; text-align: center; width: 80%; max-width: 300px;
+  }
+  .waiting-msg {
+    position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--yellow);
+    background: rgba(0,0,0,0.7); padding: 6px 16px; border-radius: 20px; z-index: 30;
+    border: 1px solid var(--yellow); text-align: center; white-space: nowrap;
   }
 
   .cyber-avatar { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10; }
   .avatar-ring {
     width: 55px; height: 55px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
     background: rgba(12, 16, 32, 0.8); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    position: relative;
   }
   .avatar-label {
     font-size: 0.75rem; font-weight: 700; margin-top: 4px;
-    background: rgba(0, 0, 0, 0.7); padding: 2px 8px; border-radius: 10px;
+    background: rgba(0, 0, 0, 0.7); padding: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 4px;
   }
   .cyber-avatar.active .avatar-ring { border-color: var(--yellow); box-shadow: 0 0 20px var(--yellow); animation: pulse 1s infinite alternate; }
 
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+
+  .kick-btn {
+    background: #ff3b30; color: #fff; border: none; border-radius: 6px;
+    font-size: 0.65rem; font-weight: 900; padding: 2px 6px; cursor: pointer;
+    margin-left: 4px; transition: 0.2s;
+  }
+  .kick-btn:hover { background: #ff0000; transform: scale(1.1); }
 
   .pos-bottom { bottom: 15px; }
   .pos-top { top: 15px; }
@@ -152,8 +201,9 @@
     position: absolute; bottom: 20px; right: 20px; width: 65px; height: 65px; border-radius: 50%;
     background: linear-gradient(135deg, var(--secondary), #ff0040); border: 2px solid #fff;
     color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; z-index: 30;
-    box-shadow: 0 0 20px var(--secondary-glow);
+    box-shadow: 0 0 20px var(--secondary-glow); transition: 0.3s;
   }
+  .uno-trigger:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--secondary-glow); }
 
   .color-picker {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -161,7 +211,8 @@
     display: grid; grid-template-columns: repeat(2, 65px); gap: 12px; z-index: 50;
     box-shadow: 0 0 30px var(--primary-glow);
   }
-  .color-btn { width: 65px; height: 65px; border-radius: 14px; cursor: pointer; border: 2px solid #fff; }
+  .color-btn { width: 65px; height: 65px; border-radius: 14px; cursor: pointer; border: 2px solid #fff; transition: 0.2s; }
+  .color-btn:hover { transform: scale(1.1); }
 
   .hidden { display: none !important; }
 
@@ -181,12 +232,33 @@
 <div class="cyber-panel" id="lobbyPanel">
   <div class="title-container">
     <div class="cyber-title">OFFICIAL UNO ONLINE</div>
-    <div class="cyber-subtitle">Mode Officiel • Attaque +2 & +4 Instantanée • 1 à 4 Joueurs</div>
+    <div class="cyber-subtitle">Mode Officiel • Attaque +2 & +4 Instantanée • 2 à 4 Joueurs</div>
   </div>
 
   <input type="text" class="cyber-input" id="playerName" placeholder="TON PSEUDO" maxlength="12" value="Jad" />
 
-  <button class="cyber-btn" onclick="initRoom()">➕ CRÉER UNE TABLE</button>
+  <!-- BOUTON CRÉER AVEC MENU DÉROULANT ANIMÉ -->
+  <button class="cyber-btn" onclick="toggleCreateBox()">➕ CRÉER UNE TABLE</button>
+  
+  <div class="animated-box" id="createBox">
+    <div class="player-choice-title">CHOISIS LE NOMBRE DE JOUEURS</div>
+    <div class="player-options-grid">
+      <div class="player-card-btn" onclick="initRoom(2)">
+        <div class="num">2</div>
+        <div class="lbl">JOUEURS</div>
+      </div>
+      <div class="player-card-btn" onclick="initRoom(3)">
+        <div class="num">3</div>
+        <div class="lbl">JOUEURS</div>
+      </div>
+      <div class="player-card-btn" onclick="initRoom(4)">
+        <div class="num">4</div>
+        <div class="lbl">JOUEURS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOUTON REJOINDRE AVEC MENU DÉROULANT ANIMÉ -->
   <button class="cyber-btn secondary" style="margin-top:10px;" onclick="toggleJoinBox()">🔗 REJOINDRE UNE TABLE</button>
 
   <div class="animated-box" id="joinBox">
@@ -198,6 +270,11 @@
 <!-- PLATEAU UNO -->
 <div id="gameArena" class="hidden">
   <div class="room-badge" id="badgeRoom">TABLE : ------</div>
+
+  <div class="host-controls hidden" id="hostControls">
+    <button class="cyber-btn green" onclick="startGame()">▶ DÉMARRER LA PARTIE</button>
+  </div>
+  <div class="waiting-msg hidden" id="waitingMsg">⏳ En attente de l'hôte...</div>
 
   <div class="cyber-avatar pos-bottom" id="slot0"><div class="avatar-ring">🧙‍♂️</div><div class="avatar-label" id="lbl0">Toi</div></div>
   <div class="cyber-avatar pos-top" id="slot1"><div class="avatar-ring">🥷</div><div class="avatar-label" id="lbl1">En attente...</div></div>
@@ -263,7 +340,13 @@ const db = firebase.firestore();
 let myId = 'p_' + Math.random().toString(36).slice(2,8);
 let currentRoom = null, unsub = null, pendingCard = null;
 
+function toggleCreateBox() {
+  document.getElementById('joinBox').classList.remove('open');
+  document.getElementById('createBox').classList.toggle('open');
+}
+
 function toggleJoinBox() {
+  document.getElementById('createBox').classList.remove('open');
   document.getElementById('joinBox').classList.toggle('open');
 }
 
@@ -292,7 +375,7 @@ function buildOfficialDeck() {
   return deck;
 }
 
-function initRoom() {
+function initRoom(maxPlayers) {
   const name = document.getElementById('playerName').value.trim() || 'Joueur 1';
   currentRoom = Math.random().toString(36).slice(2,8).toUpperCase();
   let deck = buildOfficialDeck();
@@ -305,7 +388,10 @@ function initRoom() {
   }
 
   db.collection('rooms').doc(currentRoom).set({
+    hostId: myId,
+    started: false,
     deck: deck,
+    maxPlayers: maxPlayers,
     players: [{ id: myId, name }],
     turn: 0,
     direction: 1,
@@ -324,7 +410,9 @@ function connectRoom() {
     if(!doc.exists) return alert("Table introuvable !");
     let d = doc.data();
     let players = d.players || [];
-    if(players.length >= 4 && !players.find(p=>p.id===myId)) return alert("Table pleine !");
+    let limit = d.maxPlayers || 4;
+    
+    if(players.length >= limit && !players.find(p=>p.id===myId)) return alert("Table pleine (" + limit + " joueurs max) !");
 
     let deck = d.deck || buildOfficialDeck();
     let hands = d.hands || {};
@@ -340,6 +428,27 @@ function connectRoom() {
   });
 }
 
+function startGame() {
+  db.collection('rooms').doc(currentRoom).update({
+    started: true
+  });
+}
+
+function kickPlayer(targetId) {
+  db.collection('rooms').doc(currentRoom).get().then(doc => {
+    if(!doc.exists) return;
+    let d = doc.data();
+    let players = d.players.filter(p => p.id !== targetId);
+    let hands = { ...d.hands };
+    delete hands[targetId];
+
+    db.collection('rooms').doc(currentRoom).update({
+      players: players,
+      hands: hands
+    });
+  });
+}
+
 function launchArena() {
   document.getElementById('lobbyPanel').classList.add('hidden');
   document.getElementById('gameArena').classList.remove('hidden');
@@ -347,16 +456,65 @@ function launchArena() {
 
   if(unsub) unsub();
   unsub = db.collection('rooms').doc(currentRoom).onSnapshot(snap => {
-    if(snap.exists) updateUi(snap.data());
+    if(!snap.exists) return;
+    let d = snap.data();
+    
+    // Vérifier si le joueur a été kické
+    if(!d.players.find(p => p.id === myId)) {
+      alert("Tu as été expulsé de la partie par l'hôte.");
+      window.location.reload();
+      return;
+    }
+
+    updateUi(d);
   });
 }
 
 function updateUi(d) {
+  const isHost = d.hostId === myId;
+
+  // Affichage du contrôle hôte / attente
+  if(!d.started) {
+    if(isHost) {
+      document.getElementById('hostControls').classList.remove('hidden');
+      document.getElementById('waitingMsg').classList.add('hidden');
+    } else {
+      document.getElementById('hostControls').classList.add('hidden');
+      document.getElementById('waitingMsg').classList.remove('hidden');
+    }
+  } else {
+    document.getElementById('hostControls').classList.add('hidden');
+    document.getElementById('waitingMsg').classList.add('hidden');
+  }
+
+  // Affichage des avatars et gestion de Kick
+  for(let i=0; i<4; i++) {
+    let slot = document.getElementById('slot' + i);
+    if(i >= d.maxPlayers) {
+      if(slot) slot.style.display = 'none';
+    } else {
+      if(slot) slot.style.display = 'flex';
+    }
+  }
+
   d.players.forEach((p, idx) => {
     let lbl = document.getElementById('lbl' + idx);
-    if(lbl) lbl.textContent = p.name + (p.id === myId ? ' (Toi)' : '');
+    if(lbl) {
+      let isMe = p.id === myId;
+      let isPlayerHost = p.id === d.hostId;
+      lbl.innerHTML = `${isPlayerHost ? '👑 ' : ''}${p.name}${isMe ? ' (Toi)' : ''}`;
+
+      // Afficher bouton Kick si on est l'hôte et que ce n'est pas nous-même
+      if(isHost && !isMe && !d.started) {
+        let btn = document.createElement('button');
+        btn.className = 'kick-btn';
+        btn.textContent = '❌ Kick';
+        btn.onclick = (e) => { e.stopPropagation(); kickPlayer(p.id); };
+        lbl.appendChild(btn);
+      }
+    }
     let slot = document.getElementById('slot' + idx);
-    if(slot) slot.classList.toggle('active', d.turn === idx);
+    if(slot) slot.classList.toggle('active', d.turn === idx && d.started);
   });
 
   let pile = document.getElementById('tablePile');
@@ -381,6 +539,8 @@ function getNextTurn(currentTurn, direction, totalPlayers, skip = false) {
 }
 
 function playCard(card, idx, d) {
+  if(!d.started) return alert("La partie n'a pas encore été démarrée par l'hôte !");
+
   let pIdx = d.players.findIndex(p => p.id === myId);
   if(d.turn !== pIdx) return alert("Ce n'est pas ton tour !");
 
@@ -405,7 +565,6 @@ function chooseColor(color) {
   }
 }
 
-/* EXECUTION ET ATTAQUE DIRECTE DES CARTES SPECIALES (+2 ET +4) */
 function executeMove(card, idx, d, targetColor) {
   let deck = [...(d.deck || [])];
   let hands = { ...d.hands };
@@ -421,7 +580,6 @@ function executeMove(card, idx, d, targetColor) {
 
   let nextTurn = getNextTurn(d.turn, direction, d.players.length, skip);
 
-  // DISTRIBUTION IMMÉDIATE DE 2 CARTES ET SAUT DU TOUR
   if(card.val === '+2') {
     let victimId = d.players[nextTurn].id;
     let victimHand = [...(hands[victimId] || [])];
@@ -433,7 +591,6 @@ function executeMove(card, idx, d, targetColor) {
     nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
   }
 
-  // DISTRIBUTION IMMÉDIATE DE 4 CARTES ET SAUT DU TOUR
   if(card.val === '🌈 +4') {
     let victimId = d.players[nextTurn].id;
     let victimHand = [...(hands[victimId] || [])];
@@ -457,6 +614,8 @@ function executeMove(card, idx, d, targetColor) {
 function drawUnoCard() {
   db.collection('rooms').doc(currentRoom).get().then(doc => {
     let d = doc.data();
+    if(!d.started) return alert("La partie n'a pas encore été démarrée par l'hôte !");
+
     let pIdx = d.players.findIndex(p => p.id === myId);
     if(d.turn !== pIdx) return alert("Ce n'est pas ton tour !");
 
