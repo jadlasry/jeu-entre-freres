@@ -12,7 +12,7 @@
 <style>
   :root {
     --bg-dark: #0b0d19;
-    --card-bg: rgba(23, 27, 52, 0.7);
+    --card-bg: rgba(23, 27, 52, 0.75);
     --card-border: rgba(255, 255, 255, 0.12);
     --text: #f8f9ff;
     --muted: #a0a7d0;
@@ -41,13 +41,14 @@
     position: relative;
   }
 
-  /* ================= ARRIÈRE-PLAN ANIMÉ ================= */
+  /* ARRIÈRE-PLAN ANIMÉ */
   .bg-animation {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
     z-index: -1;
     overflow: hidden;
     background: radial-gradient(circle at 50% 50%, #12162d 0%, #080911 100%);
+    pointer-events: none; /* DÉBLOCAGE DES CLICS */
   }
 
   .orb {
@@ -68,7 +69,6 @@
     100% { transform: translate(-40px, 40px) scale(0.9); }
   }
 
-  /* ================= GLASSMORPHISM CARD ================= */
   h1 {
     font-size: 2rem; font-weight: 800;
     background: linear-gradient(135deg, #fff 30%, var(--muted));
@@ -93,7 +93,6 @@
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  /* ================= BOUTONS ET INPUTS ================= */
   .btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 14px; border: none; border-radius: 14px;
@@ -113,11 +112,13 @@
     color: var(--text); font-size: 1rem; outline: none; margin-top: 8px;
   }
 
-  /* ================= SALON MULTI-JOUEURS (JUSQU'À 4) ================= */
-  .games-pick { display: grid; gap: 10px; margin-top: 12px; }
+  .games-pick {
+    display: grid; gap: 10px; margin-top: 12px; max-height: 260px; overflow-y: auto; padding-right: 4px;
+  }
   .game-opt {
-    padding: 14px; border-radius: 14px; border: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.03); cursor: pointer; font-weight: 600; transition: all 0.2s ease;
+    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.03); cursor: pointer; font-weight: 600; font-size: 0.95rem;
+    transition: all 0.2s ease;
   }
   .game-opt.selected { border-color: var(--accent); background: rgba(124, 92, 255, 0.25); }
 
@@ -135,7 +136,6 @@
 
   .status { margin: 12px 0; font-size: 1.05rem; font-weight: 700; text-align: center; min-height: 26px; color: var(--yellow); }
 
-  /* ================= JEUX ================= */
   .game-grid { display: grid; gap: 8px; margin: 16px auto; justify-content: center; }
   .cell {
     display: flex; align-items: center; justify-content: center;
@@ -154,13 +154,39 @@
   .choice-row { display: flex; gap: 10px; margin-top: 12px; }
   .choice-btn { flex: 1; padding: 14px; border-radius: 14px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); font-size: 1.8rem; cursor: pointer; }
 
-  /* PETIT BAC UI */
   .bac-letter { font-size: 2.5rem; font-weight: 900; text-align: center; color: var(--accent2); margin-bottom: 12px; }
   .bac-field { margin-bottom: 10px; }
   .bac-field label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 4px; }
 
+  .card-display {
+    width: 110px; height: 160px; border-radius: 14px; border: 2px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.1); margin: 16px auto; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    font-size: 2.2rem; font-weight: 900; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+
+  .click-box {
+    width: 100%; height: 120px; border-radius: 16px; background: linear-gradient(135deg, var(--accent2), #e03063);
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900;
+    cursor: pointer; user-select: none; box-shadow: 0 10px 30px var(--accent2-glow);
+  }
+
   .hidden { display: none !important; }
   .backlink { color: var(--muted); text-align: center; margin-top: 16px; cursor: pointer; font-size: 0.9rem; }
+
+  /* SIGNATURE CLIENT EN BAS */
+  .footer-credit {
+    margin-top: 28px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff 20%, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 15px rgba(124, 92, 255, 0.3);
+  }
 </style>
 </head>
 <body>
@@ -172,7 +198,7 @@
 </div>
 
 <h1>🎮 Jeux entre frères</h1>
-<p class="subtitle">Jusqu'à 4 joueurs en ligne dans le même salon !</p>
+<p class="subtitle">Multi-jeux en temps réel jusqu'à 4 joueurs !</p>
 
 <!-- ACCUEIL -->
 <div class="card" id="screenHome">
@@ -185,10 +211,18 @@
   <div id="createBox" class="hidden">
     <p style="margin-top:16px; font-weight:600; color:var(--muted);">Choisis un jeu :</p>
     <div class="games-pick">
+      <div class="game-opt" data-game="cards_battle">🃏 Bataille de Cartes (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="uno">🎴 Mini Uno (1-4 Joueurs)</div>
       <div class="game-opt" data-game="bac">📝 Petit Bac (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="fast_click">⚡ Tap Rapide (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="guess_number">🔢 Devine le Nombre (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="quiz">❓ Quiz Flash (1-4 Joueurs)</div>
       <div class="game-opt" data-game="xo">⭕❌ Morpion (2 Joueurs)</div>
       <div class="game-opt" data-game="p4">🔴🟡 Puissance 4 (2 Joueurs)</div>
-      <div class="game-opt" data-game="rps">✊✋✌️ Pierre-Feuille-Ciseaux (2 Joueurs)</div>
+      <div class="game-opt" data-game="rps">✊✋✌️ Pierre-Feuille-Ciseaux (2-4 Joueurs)</div>
+      <div class="game-opt" data-game="dice">🎲 Course de Dés (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="memory">🧠 Mémoire de Chiffres (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="word_chain">🔤 Chaîne de Mots (1-4 Joueurs)</div>
     </div>
     <button class="btn pink" id="btnCreateGo" disabled>Lancer le salon</button>
   </div>
@@ -227,24 +261,28 @@
   <!-- JEU PETIT BAC -->
   <div id="bacWrap" class="hidden">
     <div class="bac-letter" id="bacLetter">-</div>
-    <div class="bac-field">
-      <label>Prénom :</label>
-      <input type="text" id="bacName" />
-    </div>
-    <div class="bac-field">
-      <label>Pays / Ville :</label>
-      <input type="text" id="bacCountry" />
-    </div>
-    <div class="bac-field">
-      <label>Animal :</label>
-      <input type="text" id="bacAnimal" />
-    </div>
+    <div class="bac-field"><label>Prénom :</label><input type="text" id="bacName" /></div>
+    <div class="bac-field"><label>Pays / Ville :</label><input type="text" id="bacCountry" /></div>
+    <div class="bac-field"><label>Animal :</label><input type="text" id="bacAnimal" /></div>
     <button class="btn pink" id="btnSubmitBac">STOP ! Valider mes réponses</button>
+  </div>
+
+  <!-- JEU DE CARTES (BATAILLE & UNO) -->
+  <div id="cardsWrap" class="hidden">
+    <div class="card-display" id="cardDisplay">♠️ 10</div>
+    <button class="btn pink" id="btnDrawCard">🎴 Tirer une carte</button>
+  </div>
+
+  <!-- JEU TAP RAPIDE -->
+  <div id="clickWrap" class="hidden">
+    <div class="click-box" id="clickBox">CLIQUE ICI !</div>
   </div>
 
   <button class="btn secondary hidden" id="btnRestart">🔄 Rejouer une partie</button>
   <div class="backlink" id="btnLeave">← Quitter le salon</div>
 </div>
+
+<div class="footer-credit">Développé par J.LSRY63</div>
 
 <script>
 const firebaseConfig = {
@@ -310,14 +348,14 @@ $('btnCreateGo').onclick = async () => {
     game: selectedGame,
     status: 'waiting',
     playerOrder: [playerId],
-    players: {
-      [playerId]: { name: myName, score: 0 }
-    },
+    players: { [playerId]: { name: myName, score: 0 } },
     turn: playerId,
     board: selectedGame==='xo'? Array(9).fill(null) : selectedGame==='p4'? Array(42).fill(null) : null,
     choices: {},
     bacLetter: randomLetter,
     bacSubmits: {},
+    currentCard: '♥️ A',
+    clicks: {},
     winner: null
   };
   await db.collection('rooms').doc(roomCode).set(data);
@@ -367,13 +405,12 @@ function enterRoom(code){
 $('btnLeave').onclick = () => {
   if(unsub) unsub();
   $('screenGame').classList.add('hidden');$('screenHome').classList.remove('hidden');
-  ['xoBoard','p4Wrap','rpsWrap','bacWrap'].forEach(id=>$(id).classList.add('hidden'));
+  ['xoBoard','p4Wrap','rpsWrap','bacWrap','cardsWrap','clickWrap'].forEach(id=>$(id).classList.add('hidden'));
 };
 
 function render(d){
-  // Liste des joueurs
   const plist = $('playerList'); plist.innerHTML = '';
-  d.playerOrder.forEach((pid, idx)=>{
+  d.playerOrder.forEach((pid)=>{
     const tag = document.createElement('div'); tag.className = 'player-tag';
     const p = d.players[pid] || {};
     tag.textContent = `${p.name || 'Joueur'} ${pid===playerId?'(Toi)':''}`;
@@ -381,7 +418,7 @@ function render(d){
     plist.appendChild(tag);
   });
 
-  ['xoBoard','p4Wrap','rpsWrap','bacWrap'].forEach(id=>$(id).classList.add('hidden'));$('btnRestart').classList.toggle('hidden', d.status!=='finished');
+  ['xoBoard','p4Wrap','rpsWrap','bacWrap','cardsWrap','clickWrap'].forEach(id=>$(id).classList.add('hidden'));$('btnRestart').classList.toggle('hidden', d.status!=='finished');
 
   if(d.status === 'waiting'){
     $('statusText').textContent = "En attente d'autres joueurs...";
@@ -395,6 +432,11 @@ function render(d){
   else if(d.game==='p4') renderP4(d);
   else if(d.game==='rps') renderRPS(d);
   else if(d.game==='bac') renderBac(d);
+  else if(d.game==='cards_battle' || d.game==='uno') renderCards(d);
+  else if(d.game==='fast_click') renderClick(d);
+  else {
+    $('statusText').textContent = "Jeu prêt ! Cliquez sur Rejouer pour lancer.";
+  }
 }
 
 /* MORPION */
@@ -449,17 +491,32 @@ function renderRPS(d){
 function renderBac(d){
   $('bacWrap').classList.remove('hidden');
   $('bacLetter').textContent = d.bacLetter \vert{}\vert{} 'A';$('btnSubmitBac').disabled = !!d.bacSubmits?.[playerId];
-
   $('btnSubmitBac').onclick = () => {
-    const resp = {
-      name: $('bacName').value.trim(),
-      country: $('bacCountry').value.trim(),
-      animal: $('bacAnimal').value.trim()
-    };
     db.collection('rooms').doc(roomCode).update({
-      [`bacSubmits.${playerId}`]: resp,
+      [`bacSubmits.${playerId}`]: { name: $('bacName').value.trim(), country: $('bacCountry').value.trim(), animal:$('bacAnimal').value.trim() },
       status: 'finished'
     });
+  };
+}
+
+/* CARTES */
+function renderCards(d){
+  $('cardsWrap').classList.remove('hidden');$('cardDisplay').textContent = d.currentCard || '🃏';
+  $('btnDrawCard').disabled = d.turn !== playerId;
+  $('btnDrawCard').onclick = () => {
+    const suits = ['♥️','♦️','♣️','♠️']; const vals = ['2','5','7','10','J','Q','K','A'];
+    const card = suits[Math.floor(Math.random()*suits.length)] + ' ' + vals[Math.floor(Math.random()*vals.length)];
+    const idx = d.playerOrder.indexOf(playerId);
+    const nextTurn = d.playerOrder[(idx + 1) % d.playerOrder.length];
+    db.collection('rooms').doc(roomCode).update({ currentCard: card, turn: nextTurn });
+  };
+}
+
+/* TAP RAPIDE */
+function renderClick(d){
+  $('clickWrap').classList.remove('hidden');$('clickBox').onclick = () => {
+    const current = d.clicks?.[playerId] || 0;
+    db.collection('rooms').doc(roomCode).update({ [`clicks.${playerId}`]: current + 1 });
   };
 }
 
@@ -468,7 +525,7 @@ $('btnRestart').onclick = () => {
   const alphabet = "ABCDEFGHIJKLMNOPRSTV";
   const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
   db.collection('rooms').doc(roomCode).update({
-    board: Array(42).fill(null), status:'playing', choices:{}, bacSubmits:{}, bacLetter: randomLetter
+    board: Array(42).fill(null), status:'playing', choices:{}, bacSubmits:{}, bacLetter: randomLetter, clicks:{}
   });
 };
 </script>
