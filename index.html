@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>OFFICIAL UNO ONLINE 🎴 | J.LSRY63</title>
+<title>OFFICIAL UNO PRO 🎴 | J.LSRY63</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap');
 
   :root {
     --primary: #00f0ff;
@@ -19,10 +19,10 @@
     --secondary-glow: rgba(255, 0, 127, 0.4);
     --yellow: #ffe600;
     --bg: #05070f;
-    --panel-bg: rgba(12, 16, 32, 0.9);
+    --panel-bg: rgba(12, 16, 32, 0.88);
     --panel-border: rgba(0, 240, 255, 0.3);
-    --card-w: 68px;
-    --card-h: 100px;
+    --card-w: 70px;
+    --card-h: 102px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Rajdhani', sans-serif; }
@@ -42,14 +42,21 @@
 
   #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
+  /* LOBBY / PANEL AVEC ANIMATION SWIPE */
   .cyber-panel {
     position: relative; z-index: 10; width: 95vw; max-width: 880px;
     background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--panel-border); border-radius: 24px; padding: 24px;
+    border: 1px solid var(--panel-border); border-radius: 24px; padding: 28px 24px;
     box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
+    animation: fadeIn 0.4s ease-out;
   }
 
-  .title-container { text-align: center; margin-bottom: 16px; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .title-container { text-align: center; margin-bottom: 20px; }
   .cyber-title {
     font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px;
     background: linear-gradient(135deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
@@ -60,20 +67,31 @@
   .cyber-input {
     width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid rgba(0, 240, 255, 0.3);
     background: rgba(5, 7, 15, 0.8); color: var(--primary); font-family: 'Orbitron', sans-serif;
-    font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px;
+    font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px; transition: 0.3s;
   }
+  .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
   .cyber-btn {
-    width: 100%; padding: 14px; border-radius: 14px; border: none;
+    width: 100%; padding: 15px; border-radius: 14px; border: none;
     background: linear-gradient(135deg, var(--primary), #0072ff); color: #000;
     font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 900;
-    letter-spacing: 1px; cursor: pointer; transition: all 0.2s ease;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
     box-shadow: 0 0 20px var(--primary-glow); margin-top: 8px;
   }
   .cyber-btn.pink { background: linear-gradient(135deg, var(--secondary), #ff0040); color: #fff; box-shadow: 0 0 20px var(--secondary-glow); }
   .cyber-btn.secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; box-shadow: none; }
+  .cyber-btn:active { transform: scale(0.97); }
 
-  /* PLATEAU UNO */
+  /* SECTION ANIMÉE REJOINDRE / CRÉER */
+  .animated-box {
+    max-height: 0; overflow: hidden; opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .animated-box.open {
+    max-height: 200px; opacity: 1; margin-top: 16px;
+  }
+
+  /* PLATEAU DE JEU UNO */
   #gameArena {
     position: relative; width: 100vw; height: 100vh; max-width: 920px; max-height: 600px;
     background: radial-gradient(circle, #1a233a 0%, #0a0d18 80%);
@@ -97,7 +115,9 @@
     font-size: 0.75rem; font-weight: 700; margin-top: 4px;
     background: rgba(0, 0, 0, 0.7); padding: 2px 8px; border-radius: 10px;
   }
-  .cyber-avatar.active .avatar-ring { border-color: var(--yellow); box-shadow: 0 0 20px var(--yellow); }
+  .cyber-avatar.active .avatar-ring { border-color: var(--yellow); box-shadow: 0 0 20px var(--yellow); animation: pulse 1s infinite alternate; }
+
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
 
   .pos-bottom { bottom: 15px; }
   .pos-top { top: 15px; }
@@ -107,11 +127,11 @@
   .table-center { display: flex; gap: 20px; align-items: center; justify-content: center; z-index: 5; }
 
   .uno-card {
-    width: var(--card-w); height: var(--card-h); border-radius: 8px;
+    width: var(--card-w); height: var(--card-h); border-radius: 10px;
     border: 2px solid #fff; background: #0c1020; display: flex;
     flex-direction: column; align-items: center; justify-content: center;
     font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900;
-    cursor: pointer; transition: 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center;
+    cursor: pointer; transition: 0.25s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center;
   }
   .uno-card.blue { background: linear-gradient(135deg, #007aff, #003399); }
   .uno-card.green { background: linear-gradient(135deg, #34c759, #006622); }
@@ -119,6 +139,7 @@
   .uno-card.yellow { background: linear-gradient(135deg, #ffcc00, #997700); color: #000; }
   .uno-card.wild { background: linear-gradient(135deg, #ff007f, #00f0ff, #ffe600, #34c759); }
   .uno-card.back { background: repeating-linear-gradient(45deg, var(--secondary), var(--secondary) 10px, #000 10px, #000 20px); }
+  .uno-card:hover { transform: translateY(-8px); }
 
   .player-hand {
     position: absolute; bottom: 75px; display: flex;
@@ -131,14 +152,16 @@
     position: absolute; bottom: 20px; right: 20px; width: 65px; height: 65px; border-radius: 50%;
     background: linear-gradient(135deg, var(--secondary), #ff0040); border: 2px solid #fff;
     color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; z-index: 30;
+    box-shadow: 0 0 20px var(--secondary-glow);
   }
 
   .color-picker {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.95); padding: 16px; border-radius: 20px; border: 2px solid var(--primary);
-    display: grid; grid-template-columns: repeat(2, 60px); gap: 10px; z-index: 50;
+    background: rgba(0,0,0,0.95); padding: 18px; border-radius: 20px; border: 2px solid var(--primary);
+    display: grid; grid-template-columns: repeat(2, 65px); gap: 12px; z-index: 50;
+    box-shadow: 0 0 30px var(--primary-glow);
   }
-  .color-btn { width: 60px; height: 60px; border-radius: 12px; cursor: pointer; border: 2px solid #fff; }
+  .color-btn { width: 65px; height: 65px; border-radius: 14px; cursor: pointer; border: 2px solid #fff; }
 
   .hidden { display: none !important; }
 
@@ -154,19 +177,21 @@
 
 <canvas id="bgCanvas"></canvas>
 
-<!-- LOBBY -->
+<!-- LOBBY PRINCIPAL -->
 <div class="cyber-panel" id="lobbyPanel">
   <div class="title-container">
     <div class="cyber-title">OFFICIAL UNO ONLINE</div>
-    <div class="cyber-subtitle">Règles officielles Mattel (112 cartes) • 1 à 4 Joueurs</div>
+    <div class="cyber-subtitle">Mode Officiel • Attaque +2 & +4 Instantanée • 1 à 4 Joueurs</div>
   </div>
 
   <input type="text" class="cyber-input" id="playerName" placeholder="TON PSEUDO" maxlength="12" value="Jad" />
 
   <button class="cyber-btn" onclick="initRoom()">➕ CRÉER UNE TABLE</button>
-  <div style="margin-top:14px;">
-    <input type="text" class="cyber-input" id="roomInput" placeholder="CODE DE TABLE" maxlength="6" />
-    <button class="cyber-btn pink" onclick="connectRoom()">REJOINDRE LA TABLE</button>
+  <button class="cyber-btn secondary" style="margin-top:10px;" onclick="toggleJoinBox()">🔗 REJOINDRE UNE TABLE</button>
+
+  <div class="animated-box" id="joinBox">
+    <input type="text" class="cyber-input" id="roomInput" placeholder="CODE DE TABLE (EX: A7F3K2)" maxlength="6" />
+    <button class="cyber-btn pink" onclick="connectRoom()">REJOINDRE LA PARTIE</button>
   </div>
 </div>
 
@@ -198,7 +223,7 @@
 <div class="cyber-footer">DÉVELOPPÉ PAR J.LSRY63</div>
 
 <script>
-/* CANVAS BACKGROUND */
+/* CANVAS BACKGROUND PARTICULES */
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let pts = [];
@@ -223,7 +248,7 @@ function animCanvas() {
 }
 animCanvas();
 
-/* FIREBASE INIT */
+/* FIREBASE CONFIGURATION */
 const firebaseConfig = {
   apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
   authDomain: "jeu-entre-freres.firebaseapp.com",
@@ -238,7 +263,11 @@ const db = firebase.firestore();
 let myId = 'p_' + Math.random().toString(36).slice(2,8);
 let currentRoom = null, unsub = null, pendingCard = null;
 
-/* GÉNÉRATION COMPLÈTE DU PAQUET OFFICIEL DE 112 CARTES */
+function toggleJoinBox() {
+  document.getElementById('joinBox').classList.toggle('open');
+}
+
+/* DECK OFFICIEL 112 CARTES */
 function buildOfficialDeck() {
   const colors = ['blue', 'green', 'red', 'yellow'];
   let deck = [];
@@ -246,8 +275,7 @@ function buildOfficialDeck() {
   colors.forEach(c => {
     deck.push({ color: c, val: '0' });
     for(let i=1; i<=9; i++) {
-      deck.push({ color: c, val: i.toString() });
-      deck.push({ color: c, val: i.toString() });
+      deck.push({ color: c, val: i.toString() }, { color: c, val: i.toString() });
     }
     deck.push({ color: c, val: '+2' }, { color: c, val: '+2' });
     deck.push({ color: c, val: '🔄' }, { color: c, val: '🔄' });
@@ -256,10 +284,7 @@ function buildOfficialDeck() {
 
   for(let i=0; i<4; i++) deck.push({ color: 'wild', val: '🌈 Wild' });
   for(let i=0; i<4; i++) deck.push({ color: 'wild', val: '🌈 +4' });
-  deck.push({ color: 'wild', val: '🔀 Shuffle' });
-  for(let i=0; i<3; i++) deck.push({ color: 'wild', val: '✏️ Custom' });
 
-  // Mélange de Fisher-Yates
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -380,6 +405,7 @@ function chooseColor(color) {
   }
 }
 
+/* EXECUTION ET ATTAQUE DIRECTE DES CARTES SPECIALES (+2 ET +4) */
 function executeMove(card, idx, d, targetColor) {
   let deck = [...(d.deck || [])];
   let hands = { ...d.hands };
@@ -395,40 +421,28 @@ function executeMove(card, idx, d, targetColor) {
 
   let nextTurn = getNextTurn(d.turn, direction, d.players.length, skip);
 
-  // ACTION CARTE +2
+  // DISTRIBUTION IMMÉDIATE DE 2 CARTES ET SAUT DU TOUR
   if(card.val === '+2') {
     let victimId = d.players[nextTurn].id;
     let victimHand = [...(hands[victimId] || [])];
-    for(let i=0; i<2; i++) { if(deck.length>0) victimHand.push(deck.pop()); }
+    for(let i=0; i<2; i++) {
+      if(deck.length === 0) deck = buildOfficialDeck();
+      victimHand.push(deck.pop());
+    }
     hands[victimId] = victimHand;
     nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
   }
 
-  // ACTION CARTE +4
+  // DISTRIBUTION IMMÉDIATE DE 4 CARTES ET SAUT DU TOUR
   if(card.val === '🌈 +4') {
     let victimId = d.players[nextTurn].id;
     let victimHand = [...(hands[victimId] || [])];
-    for(let i=0; i<4; i++) { if(deck.length>0) victimHand.push(deck.pop()); }
+    for(let i=0; i<4; i++) {
+      if(deck.length === 0) deck = buildOfficialDeck();
+      victimHand.push(deck.pop());
+    }
     hands[victimId] = victimHand;
     nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
-  }
-
-  // ACTION CARTE WILD SHUFFLE HANDS (MÉLANGE DES MAINS)
-  if(card.val === '🔀 Shuffle') {
-    let allCards = [];
-    d.players.forEach(p => {
-      allCards.push(...(hands[p.id] || []));
-      hands[p.id] = [];
-    });
-    for (let i = allCards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
-    }
-    let pCount = d.players.length;
-    allCards.forEach((c, i) => {
-      let pId = d.players[i % pCount].id;
-      hands[pId].push(c);
-    });
   }
 
   db.collection('rooms').doc(currentRoom).update({
