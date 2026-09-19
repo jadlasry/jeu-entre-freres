@@ -5,123 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Jeux entre frères 🎮</title>
 
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-  :root{
-    --bg:#0f1224; --bg2:#171b34; --card:#1d2140; --text:#f2f3ff;
-    --muted:#9aa0c3; --accent:#7c5cff; --accent2:#ff5c8a;
-    --green:#3ddc97; --border:#2c3160; --radius:18px;
+  :root {
+    --bg-dark: #0b0d19;
+    --card-bg: rgba(23, 27, 52, 0.7);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --text: #f8f9ff;
+    --muted: #a0a7d0;
+    --accent: #7c5cff;
+    --accent-glow: rgba(124, 92, 255, 0.4);
+    --accent2: #ff5c8a;
+    --accent2-glow: rgba(255, 92, 138, 0.4);
+    --green: #3ddc97;
+    --yellow: #ffd23f;
+    --radius: 24px;
   }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#f3f4fb; --bg2:#ffffff; --card:#ffffff; --text:#1a1c2e;
-      --muted:#666c8f; --border:#e3e5f5;
-    }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    overflow-x: hidden;
+    position: relative;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; min-height:100vh; background:var(--bg); color:var(--text);
-    font-family:"Segoe UI",system-ui,sans-serif;
-    display:flex; flex-direction:column; align-items:center;
-    padding:24px 16px 48px;
+
+  /* ================= ARRIÈRE-PLAN ANIMÉ ================= */
+  .bg-animation {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #12162d 0%, #080911 100%);
   }
-  h1{font-size:1.5rem; margin:8px 0 4px;}
-  .subtitle{color:var(--muted); margin-bottom:24px; text-align:center;}
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:24px; width:100%; max-width:460px; box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    animation: float 18s infinite ease-in-out alternate;
   }
-  .btn{
-    display:block; width:100%; padding:14px; border:none; border-radius:12px;
-    background:var(--accent); color:#fff; font-size:1rem; font-weight:600;
-    cursor:pointer; margin-top:12px; transition:transform .1s;
+
+  .orb-1 { width: 350px; height: 350px; background: #7c5cff; top: -50px; left: -50px; }
+  .orb-2 { width: 400px; height: 400px; background: #ff5c8a; bottom: -100px; right: -50px; animation-delay: -5s; }
+  .orb-3 { width: 300px; height: 300px; background: #00d2ff; top: 40%; left: 60%; animation-delay: -10s; }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(60px, 80px) scale(1.15); }
+    100% { transform: translate(-40px, 40px) scale(0.9); }
   }
-  .btn:hover{transform:translateY(-1px);}
-  .btn.secondary{background:transparent; border:1px solid var(--border); color:var(--text);}
-  .btn.pink{background:var(--accent2);}
-  .btn:disabled{opacity:.5; cursor:not-allowed;}
-  input[type=text]{
-    width:100%; padding:12px; border-radius:10px; border:1px solid var(--border);
-    background:var(--bg2); color:var(--text); font-size:1rem; text-align:center;
-    letter-spacing:3px; text-transform:uppercase;
+
+  /* ================= GLASSMORPHISM CARD ================= */
+  h1 {
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--muted));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px; text-shadow: 0 10px 20px rgba(0,0,0,0.2);
   }
-  .game-grid{display:grid; gap:10px; margin:16px auto;}
-  .choice-row{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
-  .choice-btn{flex:1; min-width:80px; padding:12px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); color:var(--text); font-size:1.6rem; cursor:pointer;}
-  .choice-btn:hover{border-color:var(--accent);}
-  .cell{
-    display:flex; align-items:center; justify-content:center;
-    background:var(--bg2); border-radius:10px; font-weight:800; cursor:pointer;
-    user-select:none; border:1px solid var(--border); transition: background 0.15s ease;
+
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; text-align: center; }
+
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 24px; width: 100%; max-width: 480px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.4s ease-out;
   }
-  #xoBoard{grid-template-columns:repeat(3,72px);}
-  #xoBoard .cell{width:72px; height:72px; font-size:2rem;}
-  #p4Board{grid-template-columns:repeat(7,44px); gap:6px;}
-  #p4Board .cell{width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:default;}
-  #p4Cols{display:grid; grid-template-columns:repeat(7,44px); gap:6px; margin-top:8px;}
-  #p4Cols button{width:44px; height:32px; border-radius:8px; border:none; background:var(--accent); color:#fff; cursor:pointer; font-weight:700;}
-  .status{margin:14px 0; font-weight:600; text-align:center; min-height:24px;}
-  .roomcode{
-    font-size:1.6rem; letter-spacing:6px; font-weight:800; text-align:center;
-    background:var(--bg2); border:1px dashed var(--accent); border-radius:12px; padding:10px; margin:12px 0;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
-  .players{display:flex; justify-content:space-between; font-size:.9rem; color:var(--muted); margin-bottom:8px;}
-  .players b{color:var(--text);}
-  .hidden{display:none !important;}
-  .games-pick{display:grid; gap:10px; margin-top:8px;}
-  .game-opt{padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); cursor:pointer; text-align:left;}
-  .game-opt.selected{border-color:var(--accent); background:rgba(124,92,255,.15);}
-  .backlink{color:var(--muted); text-align:center; margin-top:14px; cursor:pointer; font-size:.9rem;}
-  .score{text-align:center; font-size:1.1rem; margin-top:6px;}
+
+  /* ================= BOUTONS ET INPUTS ================= */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), #5a38ff);
+    color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer;
+    margin-top: 12px; box-shadow: 0 8px 20px var(--accent-glow);
+    transition: all 0.2s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text); box-shadow: none; }
+  .btn.pink { background: linear-gradient(135deg, var(--accent2), #e03063); box-shadow: 0 8px 20px var(--accent2-glow); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+  input[type=text] {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1px solid var(--card-border); background: rgba(0, 0, 0, 0.3);
+    color: var(--text); font-size: 1rem; outline: none; margin-top: 8px;
+  }
+
+  /* ================= SALON MULTI-JOUEURS (JUSQU'À 4) ================= */
+  .games-pick { display: grid; gap: 10px; margin-top: 12px; }
+  .game-opt {
+    padding: 14px; border-radius: 14px; border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.03); cursor: pointer; font-weight: 600; transition: all 0.2s ease;
+  }
+  .game-opt.selected { border-color: var(--accent); background: rgba(124, 92, 255, 0.25); }
+
+  .player-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
+  .player-tag {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
+    padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; text-align: center;
+  }
+
+  .roomcode {
+    font-size: 1.8rem; letter-spacing: 6px; font-weight: 900; text-align: center;
+    background: rgba(0, 0, 0, 0.3); border: 1px dashed var(--accent); border-radius: 14px;
+    padding: 10px; margin: 12px 0; text-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .status { margin: 12px 0; font-size: 1.05rem; font-weight: 700; text-align: center; min-height: 26px; color: var(--yellow); }
+
+  /* ================= JEUX ================= */
+  .game-grid { display: grid; gap: 8px; margin: 16px auto; justify-content: center; }
+  .cell {
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.05); border-radius: 12px;
+    font-weight: 800; cursor: pointer; user-select: none; border: 1px solid var(--card-border);
+  }
+
+  #xoBoard { grid-template-columns: repeat(3, 75px); }
+  #xoBoard .cell { width: 75px; height: 75px; font-size: 2rem; }
+
+  #p4Board { grid-template-columns: repeat(7, 40px); gap: 6px; }
+  #p4Board .cell { width: 40px; height: 40px; border-radius: 50%; }
+  #p4Cols { display: grid; grid-template-columns: repeat(7, 40px); gap: 6px; margin-top: 8px; }
+  #p4Cols button { width: 40px; height: 32px; border-radius: 8px; border: none; background: var(--accent); color: #fff; cursor: pointer; font-weight: 800; }
+
+  .choice-row { display: flex; gap: 10px; margin-top: 12px; }
+  .choice-btn { flex: 1; padding: 14px; border-radius: 14px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); font-size: 1.8rem; cursor: pointer; }
+
+  /* PETIT BAC UI */
+  .bac-letter { font-size: 2.5rem; font-weight: 900; text-align: center; color: var(--accent2); margin-bottom: 12px; }
+  .bac-field { margin-bottom: 10px; }
+  .bac-field label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 4px; }
+
+  .hidden { display: none !important; }
+  .backlink { color: var(--muted); text-align: center; margin-top: 16px; cursor: pointer; font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
-<h1>🎮 Jeux entre frères</h1>
-<p class="subtitle">Joue en ligne à distance : crée une partie, envoie le code à ton frère.</p>
+<div class="bg-animation">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
 
-<!-- ÉCRAN ACCUEIL -->
+<h1>🎮 Jeux entre frères</h1>
+<p class="subtitle">Jusqu'à 4 joueurs en ligne dans le même salon !</p>
+
+<!-- ACCUEIL -->
 <div class="card" id="screenHome">
-  <button class="btn" id="btnShowCreate">➕ Créer une partie</button>
-  <button class="btn secondary" id="btnShowJoin">🔗 Rejoindre une partie</button>
+  <label style="font-size:0.85rem; color:var(--muted);">Ton Pseudo :</label>
+  <input type="text" id="playerNameInput" placeholder="Ex: Joueur 1" maxlength="12" />
+
+  <button class="btn" id="btnShowCreate" style="margin-top:16px;">➕ Créer un salon (1 à 4 joueurs)</button>
+  <button class="btn secondary" id="btnShowJoin">🔗 Rejoindre un salon</button>
 
   <div id="createBox" class="hidden">
-    <p style="margin-top:18px; font-weight:600;">Choisis un jeu :</p>
+    <p style="margin-top:16px; font-weight:600; color:var(--muted);">Choisis un jeu :</p>
     <div class="games-pick">
-      <div class="game-opt" data-game="xo">⭕❌ Morpion (XO)</div>
-      <div class="game-opt" data-game="p4">🔴🟡 Puissance 4</div>
-      <div class="game-opt" data-game="rps">✊✋✌️ Pierre-Feuille-Ciseaux</div>
+      <div class="game-opt" data-game="bac">📝 Petit Bac (1-4 Joueurs)</div>
+      <div class="game-opt" data-game="xo">⭕❌ Morpion (2 Joueurs)</div>
+      <div class="game-opt" data-game="p4">🔴🟡 Puissance 4 (2 Joueurs)</div>
+      <div class="game-opt" data-game="rps">✊✋✌️ Pierre-Feuille-Ciseaux (2 Joueurs)</div>
     </div>
-    <button class="btn pink" id="btnCreateGo" disabled>Créer la partie</button>
+    <button class="btn pink" id="btnCreateGo" disabled>Lancer le salon</button>
   </div>
 
   <div id="joinBox" class="hidden">
-    <p style="margin-top:18px; font-weight:600;">Code reçu de ton frère :</p>
-    <input type="text" id="joinCodeInput" maxlength="6" placeholder="EX: 7F3K2A" />
-    <button class="btn pink" id="btnJoinGo">Rejoindre</button>
+    <p style="margin-top:16px; font-weight:600; color:var(--muted);">Code du salon :</p>
+    <input type="text" id="joinCodeInput" maxlength="6" placeholder="EX: 7F3K2A" style="text-align:center; letter-spacing:3px; text-transform:uppercase;" />
+    <button class="btn pink" id="btnJoinGo">Rejoindre le salon</button>
   </div>
 </div>
 
-<!-- ÉCRAN SALLE / JEU -->
+<!-- SALON / JEU -->
 <div class="card hidden" id="screenGame">
   <div class="roomcode" id="roomCodeDisplay"></div>
-  <div class="players">
-    <span>Joueur 1: <b id="p1Name">—</b></span>
-    <span>Joueur 2: <b id="p2Name">—</b></span>
-  </div>
-  <div class="status" id="statusText">En attente...</div>
+  <div class="player-list" id="playerList"></div>
+  <div class="status" id="statusText">Connexion...</div>
 
+  <!-- JEU MORPION -->
   <div id="xoBoard" class="game-grid hidden"></div>
 
+  <!-- JEU PUISSANCE 4 -->
   <div id="p4Wrap" class="hidden">
     <div id="p4Cols"></div>
     <div id="p4Board" class="game-grid"></div>
   </div>
 
+  <!-- JEU PIERRE FEUILLE CISEAUX -->
   <div id="rpsWrap" class="hidden">
-    <div class="score" id="rpsScore">0 - 0</div>
     <div class="choice-row">
       <button class="choice-btn" data-c="rock">✊</button>
       <button class="choice-btn" data-c="paper">✋</button>
@@ -129,8 +224,26 @@
     </div>
   </div>
 
-  <button class="btn secondary hidden" id="btnRestart">🔄 Rejouer</button>
-  <div class="backlink" id="btnLeave">← Quitter</div>
+  <!-- JEU PETIT BAC -->
+  <div id="bacWrap" class="hidden">
+    <div class="bac-letter" id="bacLetter">-</div>
+    <div class="bac-field">
+      <label>Prénom :</label>
+      <input type="text" id="bacName" />
+    </div>
+    <div class="bac-field">
+      <label>Pays / Ville :</label>
+      <input type="text" id="bacCountry" />
+    </div>
+    <div class="bac-field">
+      <label>Animal :</label>
+      <input type="text" id="bacAnimal" />
+    </div>
+    <button class="btn pink" id="btnSubmitBac">STOP ! Valider mes réponses</button>
+  </div>
+
+  <button class="btn secondary hidden" id="btnRestart">🔄 Rejouer une partie</button>
+  <div class="backlink" id="btnLeave">← Quitter le salon</div>
 </div>
 
 <script>
@@ -145,42 +258,30 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
-// Activation de la persistance locale pour accélérer les réponses réseau
 db.settings({ experimentalForceLongPolling: true });
 
 let playerId = localStorage.getItem('ffg_pid');
 if(!playerId){ playerId = 'p_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ffg_pid', playerId); }
 
-let roomCode = null, mySlot = null, unsub = null, selectedGame = null;
+let roomCode = null, unsub = null, selectedGame = null, myName = "Joueur";
 
 const $ = id => document.getElementById(id);
-const screenHome = $('screenHome'), screenGame =$('screenGame');
 
-// Initialisation des grilles fixes pour éviter de recréer le DOM inutilement
-function initDOMBoards() {
+function initDOM() {
   const xoBox = $('xoBoard'); xoBox.innerHTML = '';
   for(let i=0; i<9; i++){
-    const c = document.createElement('div');
-    c.className = 'cell'; c.dataset.idx = i;
-    xoBox.appendChild(c);
+    const c = document.createElement('div'); c.className = 'cell'; c.dataset.idx = i; xoBox.appendChild(c);
   }
-
   const p4Cols = $('p4Cols'); p4Cols.innerHTML = '';
   for(let c=0; c<7; c++){
-    const btn = document.createElement('button'); btn.textContent = '↓';
-    btn.dataset.col = c;
-    p4Cols.appendChild(btn);
+    const btn = document.createElement('button'); btn.textContent = '↓'; btn.dataset.col = c; p4Cols.appendChild(btn);
   }
-
   const p4Board = $('p4Board'); p4Board.innerHTML = '';
   for(let i=0; i<42; i++){
-    const cell = document.createElement('div'); cell.className = 'cell';
-    c.dataset.idx = i;
-    p4Board.appendChild(cell);
+    const cell = document.createElement('div'); cell.className = 'cell'; cell.dataset.idx = i; p4Board.appendChild(cell);
   }
 }
-initDOMBoards();
+initDOM();
 
 $('btnShowCreate').onclick = () => {$('createBox').classList.remove('hidden'); $('joinBox').classList.add('hidden'); };$('btnShowJoin').onclick = () => { $('joinBox').classList.remove('hidden');$('createBox').classList.add('hidden'); };
 
@@ -199,48 +300,54 @@ function genCode(){
   return c;
 }
 
-function emptyBoard(game){
-  if(game==='xo') return Array(9).fill(null);
-  if(game==='p4') return Array(42).fill(null);
-  return null;
-}
-
 $('btnCreateGo').onclick = async () => {
+  myName = $('playerNameInput').value.trim() || "Joueur 1";
   roomCode = genCode();
+  const alphabet = "ABCDEFGHIJKLMNOPRSTV";
+  const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+
   const data = {
     game: selectedGame,
     status: 'waiting',
-    players: { X: { id: playerId }, O: null },
-    turn: 'X',
-    board: emptyBoard(selectedGame),
-    choices: { X: null, O: null },
-    scores: { X: 0, O: 0 },
-    winner: null,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    playerOrder: [playerId],
+    players: {
+      [playerId]: { name: myName, score: 0 }
+    },
+    turn: playerId,
+    board: selectedGame==='xo'? Array(9).fill(null) : selectedGame==='p4'? Array(42).fill(null) : null,
+    choices: {},
+    bacLetter: randomLetter,
+    bacSubmits: {},
+    winner: null
   };
   await db.collection('rooms').doc(roomCode).set(data);
-  mySlot = 'X';
   enterRoom(roomCode);
 };
 
 $('btnJoinGo').onclick = async () => {
+  myName = $('playerNameInput').value.trim() || "Joueur";
   const code = $('joinCodeInput').value.trim().toUpperCase();
-  if(code.length < 4) return alert('Entre le code complet reçu de ton frère.');
+  if(code.length < 4) return alert('Code invalide.');
   const ref = db.collection('rooms').doc(code);
-  try{
+
+  try {
     await db.runTransaction(async (tx) => {
       const doc = await tx.get(ref);
       if(!doc.exists) throw new Error('notfound');
       const d = doc.data();
-      if(d.players.X && d.players.X.id === playerId){ mySlot='X'; return; }
-      if(d.players.O && d.players.O.id === playerId){ mySlot='O'; return; }
-      if(!d.players.X){ tx.update(ref, {'players.X': {id: playerId}}); mySlot='X'; return; }
-      if(!d.players.O){ tx.update(ref, {'players.O': {id: playerId}, status:'playing'}); mySlot='O'; return; }
-      throw new Error('full');
+      if(d.playerOrder.length >= 4 && !d.playerOrder.includes(playerId)) throw new Error('full');
+      
+      let playerOrder = d.playerOrder;
+      if(!playerOrder.includes(playerId)) playerOrder.push(playerId);
+
+      let players = d.players || {};
+      players[playerId] = { name: myName, score: 0 };
+
+      tx.update(ref, { playerOrder, players, status: playerOrder.length > 1 ? 'playing' : 'waiting' });
     });
-  }catch(e){
-    if(e.message==='notfound') return alert("Ce code n'existe pas.");
-    if(e.message==='full') return alert('Cette partie a déjà 2 joueurs.');
+  } catch(e) {
+    if(e.message==='notfound') return alert("Salon introuvable.");
+    if(e.message==='full') return alert("Salon plein (4 joueurs max).");
     return alert('Erreur : ' + e.message);
   }
   roomCode = code;
@@ -248,159 +355,120 @@ $('btnJoinGo').onclick = async () => {
 };
 
 function enterRoom(code){
-  screenHome.classList.add('hidden');
-  screenGame.classList.remove('hidden');
-  $('roomCodeDisplay').textContent = code;
+  $('screenHome').classList.add('hidden');
+  $('screenGame').classList.remove('hidden');$('roomCodeDisplay').textContent = code;
   if(unsub) unsub();
   unsub = db.collection('rooms').doc(code).onSnapshot(snap=>{
     if(!snap.exists) return;
     render(snap.data());
-  }, err => { $('statusText').textContent = 'Connexion perdue.'; });
+  });
 }
 
 $('btnLeave').onclick = () => {
   if(unsub) unsub();
-  screenGame.classList.add('hidden');
-  screenHome.classList.remove('hidden');
-  ['xoBoard','p4Wrap','rpsWrap'].forEach(id=>$(id).classList.add('hidden'));
+  $('screenGame').classList.add('hidden');$('screenHome').classList.remove('hidden');
+  ['xoBoard','p4Wrap','rpsWrap','bacWrap'].forEach(id=>$(id).classList.add('hidden'));
 };
 
 function render(d){
-  $('p1Name').textContent = d.players.X ? (d.players.X.id===playerId?'Toi':'Frère') : '—';
-  $('p2Name').textContent = d.players.O ? (d.players.O.id===playerId?'Toi':'Frère') : '—';
+  // Liste des joueurs
+  const plist = $('playerList'); plist.innerHTML = '';
+  d.playerOrder.forEach((pid, idx)=>{
+    const tag = document.createElement('div'); tag.className = 'player-tag';
+    const p = d.players[pid] || {};
+    tag.textContent = `${p.name || 'Joueur'} ${pid===playerId?'(Toi)':''}`;
+    if(d.turn === pid) tag.style.borderColor = 'var(--accent)';
+    plist.appendChild(tag);
+  });
 
-  ['xoBoard','p4Wrap','rpsWrap'].forEach(id=>$(id).classList.add('hidden'));$('btnRestart').classList.toggle('hidden', d.status!=='finished');
+  ['xoBoard','p4Wrap','rpsWrap','bacWrap'].forEach(id=>$(id).classList.add('hidden'));$('btnRestart').classList.toggle('hidden', d.status!=='finished');
 
-  if(!d.players.O){
-    $('statusText').textContent = "En attente que ton frère rejoigne avec le code...";
-  } else if(d.status==='finished'){
-    if(d.game==='rps'){
-      $('statusText').textContent = d.winner==='draw' ? 'Match nul final !' : (d.winner===mySlot?'Tu as gagné le match ! 🏆':'Ton frère a gagné le match.');
-    } else {
-      $('statusText').textContent = d.winner==='draw' ? 'Match nul !' : (d.winner===mySlot?'Tu as gagné ! 🎉':'Ton frère a gagné.');
-    }
+  if(d.status === 'waiting'){
+    $('statusText').textContent = "En attente d'autres joueurs...";
+  } else if(d.status === 'finished'){
+    $('statusText').textContent = d.winner === 'draw' ? 'Égalité ! 🤝' : `Partie terminée ! 🏆`;
   } else {
-    if(d.game==='rps'){
-      $('statusText').textContent = 'Fais ton choix pour ce round...';
-    } else {
-      $('statusText').textContent = d.turn===mySlot ? 'À toi de jouer !' : "Tour de ton frère...";
-    }
+    $('statusText').textContent = d.turn === playerId ? "⚡ À ton tour !" : `Tour de : ${d.players[d.turn]?.name || 'un joueur'}`;
   }
 
   if(d.game==='xo') renderXO(d);
   else if(d.game==='p4') renderP4(d);
   else if(d.game==='rps') renderRPS(d);
+  else if(d.game==='bac') renderBac(d);
 }
 
-/* ---------- MORPION (XO) FLUIDIFIÉ ---------- */
+/* MORPION */
 function renderXO(d){
   const box = $('xoBoard'); box.classList.remove('hidden');
   const cells = box.children;
   d.board.forEach((val, i)=>{
-    const c = cells[i];
-    c.textContent = val || '';
-    c.onclick = () => xoPlay(i, d);
-  });
-}
-const XO_WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-function xoCheckWin(b){
-  for(const [a,b2,c] of XO_WINS) if(b[a] && b[a]===b[b2] && b[a]===b[c]) return b[a];
-  if(b.every(x=>x)) return 'draw';
-  return null;
-}
-function xoPlay(i,d){
-  if(d.status==='finished' || d.turn!==mySlot || d.board[i]) return;
-  const board = [...d.board]; board[i] = mySlot;
-  const w = xoCheckWin(board);
-  db.collection('rooms').doc(roomCode).update({
-    board, turn: mySlot==='X'?'O':'X',
-    status: w ? 'finished':'playing',
-    winner: w==='draw' ? 'draw' : (w||null)
+    const c = cells[i]; c.textContent = val || '';
+    c.onclick = () => {
+      if(d.status==='finished' || d.turn!==playerId || d.board[i]) return;
+      const nextTurn = d.playerOrder.find(id => id !== playerId) || playerId;
+      const board = [...d.board]; board[i] = playerId === d.playerOrder[0] ? 'X' : 'O';
+      db.collection('rooms').doc(roomCode).update({ board, turn: nextTurn });
+    };
   });
 }
 
-/* ---------- PUISSANCE 4 FLUIDIFIÉ ---------- */
+/* PUISSANCE 4 */
 function renderP4(d){
   $('p4Wrap').classList.remove('hidden');
   const cols = $('p4Cols').children;
   for(let c=0; c<7; c++){
-    cols[c].disabled = d.status==='finished' || d.turn!==mySlot;
-    cols[c].onclick = () => p4Play(c, d);
+    cols[c].disabled = d.status==='finished' || d.turn!==playerId;
+    cols[c].onclick = () => {
+      const board = [...d.board];
+      let row = -1;
+      for(let r=5; r>=0; r--){ if(!board[r*7+c]){ row=r; break; } }
+      if(row === -1) return;
+      board[row*7+c] = playerId === d.playerOrder[0] ? 'X' : 'O';
+      const nextTurn = d.playerOrder.find(id => id !== playerId) || playerId;
+      db.collection('rooms').doc(roomCode).update({ board, turn: nextTurn });
+    };
   }
   const cells = $('p4Board').children;
   d.board.forEach((v, i)=>{
-    cells[i].style.background = v==='X' ? 'var(--accent2)' : v==='O' ? '#ffd23f' : 'var(--bg2)';
-  });
-}
-function p4CheckWin(b){
-  const at=(r,c)=> (r<0||r>5||c<0||c>6) ? null : b[r*7+c];
-  const dirs=[[0,1],[1,0],[1,1],[1,-1]];
-  for(let r=0;r<6;r++) for(let c=0;c<7;c++){
-    const v = at(r,c); if(!v) continue;
-    for(const [dr,dc] of dirs){
-      let count=1;
-      for(let k=1;k<4;k++) if(at(r+dr*k,c+dc*k)===v) count++; else break;
-      if(count>=4) return v;
-    }
-  }
-  if(b.every(x=>x)) return 'draw';
-  return null;
-}
-function p4Play(col,d){
-  if(d.status==='finished' || d.turn!==mySlot) return;
-  const board=[...d.board];
-  let row=-1;
-  for(let r=5;r>=0;r--){ if(!board[r*7+col]){ row=r; break; } }
-  if(row===-1) return;
-  board[row*7+col]=mySlot;
-  const w = p4CheckWin(board);
-  db.collection('rooms').doc(roomCode).update({
-    board, turn: mySlot==='X'?'O':'X',
-    status: w?'finished':'playing',
-    winner: w==='draw'?'draw':(w||null)
+    cells[i].style.background = v==='X' ? 'var(--accent2)' : v==='O' ? 'var(--yellow)' : 'rgba(255,255,255,0.05)';
   });
 }
 
-/* ---------- PIERRE-FEUILLE-CISEAUX FLUIDIFIÉ ---------- */
+/* PIERRE FEUILLE CISEAUX */
 function renderRPS(d){
-  $('rpsWrap').classList.remove('hidden');$('rpsScore').textContent = `${d.scores.X} - ${d.scores.O}`;
+  $('rpsWrap').classList.remove('hidden');
   document.querySelectorAll('#rpsWrap .choice-btn').forEach(b=>{
-    b.disabled = d.status==='finished' || !!(d.choices && d.choices[mySlot]);
-    b.onclick = () => rpsPlay(b.dataset.c, d);
+    b.disabled = d.status==='finished' || !!d.choices[playerId];
+    b.onclick = () => {
+      db.collection('rooms').doc(roomCode).update({ [`choices.${playerId}`]: b.dataset.c });
+    };
   });
 }
-function rpsWinner(a,b){
-  if(a===b) return 'draw';
-  const beats = {rock:'scissors', paper:'rock', scissors:'paper'};
-  return beats[a]===b ? 'X_beats' : 'O_beats';
-}
-function rpsPlay(choice, d){
-  if(d.status==='finished' || (d.choices && d.choices[mySlot])) return;
-  const ref = db.collection('rooms').doc(roomCode);
-  
-  const choices = {...(d.choices || {}), [mySlot]: choice};
-  let updateData = { [`choices.${mySlot}`]: choice };
 
-  if(choices.X && choices.O){
-    const res = rpsWinner(choices.X, choices.O);
-    let scores = {...d.scores};
-    if(res==='X_beats') scores.X++; else if(res==='O_beats') scores.O++;
-    const finished = scores.X>=3 || scores.O>=3;
-    
-    updateData.scores = scores;
-    updateData.choices = {X:null, O:null};
-    updateData.status = finished ? 'finished' : 'playing';
-    updateData.winner = finished ? (scores.X>scores.O?'X':'O') : null;
-  }
+/* PETIT BAC */
+function renderBac(d){
+  $('bacWrap').classList.remove('hidden');
+  $('bacLetter').textContent = d.bacLetter \vert{}\vert{} 'A';$('btnSubmitBac').disabled = !!d.bacSubmits?.[playerId];
 
-  ref.update(updateData);
+  $('btnSubmitBac').onclick = () => {
+    const resp = {
+      name: $('bacName').value.trim(),
+      country: $('bacCountry').value.trim(),
+      animal: $('bacAnimal').value.trim()
+    };
+    db.collection('rooms').doc(roomCode).update({
+      [`bacSubmits.${playerId}`]: resp,
+      status: 'finished'
+    });
+  };
 }
 
-/* ---------- REJOUER ---------- */
+/* REJOUER */
 $('btnRestart').onclick = () => {
+  const alphabet = "ABCDEFGHIJKLMNOPRSTV";
+  const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
   db.collection('rooms').doc(roomCode).update({
-    board: emptyBoard(selectedGame), turn:'X', status:'playing', winner:null,
-    choices:{X:null,O:null}, scores:{X:0,O:0}
+    board: Array(42).fill(null), status:'playing', choices:{}, bacSubmits:{}, bacLetter: randomLetter
   });
 };
 </script>
