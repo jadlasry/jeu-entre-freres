@@ -3,212 +3,320 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>UNO entre frères 🎴</title>
+<title>CYBER-GAME PORTAL 🎮 | J.LSRY63</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap');
+
   :root {
-    --table-bg: #2a1b18;
-    --table-mat: #1e3a29;
-    --card-width: 58px;
-    --card-height: 85px;
-    --red: #ff3b30;
-    --blue: #007aff;
-    --green: #34c759;
-    --yellow: #ffcc00;
+    --primary: #00f0ff;
+    --primary-glow: rgba(0, 240, 255, 0.4);
+    --secondary: #ff007f;
+    --secondary-glow: rgba(255, 0, 127, 0.4);
+    --yellow: #ffe600;
+    --bg: #05070f;
+    --panel-bg: rgba(12, 16, 32, 0.75);
+    --panel-border: rgba(0, 240, 255, 0.25);
+    --card-w: 65px;
+    --card-h: 95px;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Rajdhani', sans-serif; }
 
   body {
     min-height: 100vh;
-    background: #0d0e15;
+    background-color: var(--bg);
     color: #fff;
-    font-family: 'Segoe UI', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-  }
-
-  /* ACCUEIL / LOBBY */
-  .lobby-card {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 24px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-  }
-
-  .lobby-card h1 { font-size: 1.8rem; margin-bottom: 6px; }
-  .lobby-card input {
-    width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
-    border: none; background: rgba(0,0,0,0.5); color: #fff; font-size: 1rem; text-align: center;
-  }
-  .btn {
-    width: 100%; padding: 12px; border-radius: 12px; border: none;
-    background: #ff2d55; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 8px;
-  }
-  .btn.sec { background: #5856d6; }
-
-  /* PLATEAU DE JEU UNO (TABLE) */
-  #gameTable {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    max-width: 900px;
-    max-height: 600px;
-    background: radial-gradient(circle, #2d5a3f 0%, #173021 70%, #0d1a12 100%);
-    border: 12px solid #3d241d;
-    border-radius: 40px;
-    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  /* AVATARS DISPOSÉS AROUND LA TABLE */
-  .avatar {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
-  }
-  .avatar-img {
-    width: 55px; height: 55px; border-radius: 50%; border: 3px solid #fff;
-    background: #2c2c2e; display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-  }
-  .avatar-name { font-size: 0.8rem; font-weight: 700; margin-top: 4px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 10px; }
-  .avatar.active .avatar-img { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: pulse 1s infinite alternate; }
-
-  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-
-  .p-bottom { bottom: 15px; }
-  .p-top { top: 15px; }
-  .p-left { left: 15px; }
-  .p-right { right: 15px; }
-
-  /* CENTRE DE TABLE (PIOCHE ET DÉFAUSSE) */
-  .center-deck {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    justify-content: center;
+  /* CANVAS CANVAS DE PARTICULES INTERACTIF */
+  #bgCanvas {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 0; pointer-events: none;
   }
 
-  /* CARTES UNO */
+  /* CONTAINER GLASSMORPHISM CYBER */
+  .cyber-panel {
+    position: relative; z-index: 10;
+    width: 92vw; max-width: 900px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--panel-border);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);
+    animation: panelAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes panelAppear {
+    from { opacity: 0; transform: scale(0.9) translateY(30px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* TITRES & HEADER */
+  .title-container { text-align: center; margin-bottom: 20px; }
+  .cyber-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem; font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px var(--primary-glow);
+  }
+  .cyber-subtitle {
+    color: #8a99ad; font-size: 1rem; font-weight: 600; letter-spacing: 1px; margin-top: 4px;
+  }
+
+  /* BOUTONS ET INPUTS CYBER */
+  .cyber-input {
+    width: 100%; padding: 14px 18px; border-radius: 14px;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    background: rgba(5, 7, 15, 0.8);
+    color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 1rem;
+    text-align: center; outline: none; transition: 0.3s;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+  }
+  .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+
+  .cyber-btn {
+    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, var(--primary), #0072ff);
+    color: #000; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900;
+    letter-spacing: 2px; cursor: pointer; transition: all 0.2s ease;
+    box-shadow: 0 0 20px var(--primary-glow); margin-top: 12px;
+  }
+  .cyber-btn:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+  .cyber-btn:active { transform: scale(0.98); }
+  .cyber-btn.pink {
+    background: linear-gradient(135deg, var(--secondary), #ff0040);
+    color: #fff; box-shadow: 0 0 20px var(--secondary-glow);
+  }
+  .cyber-btn.secondary {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border);
+    color: #fff; box-shadow: none;
+  }
+  .cyber-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+  /* CATALOGUE DE JEUX EN 3D / GRILLE */
+  .category-filter {
+    display: flex; justify-content: center; gap: 10px; margin: 16px 0;
+  }
+  .chip {
+    padding: 6px 16px; border-radius: 20px; border: 1px solid var(--panel-border);
+    font-size: 0.85rem; font-weight: 700; cursor: pointer; background: rgba(255,255,255,0.03); transition: 0.3s;
+  }
+  .chip.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
+
+  .games-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px; max-height: 320px; overflow-y: auto; padding-right: 6px; margin-top: 12px;
+  }
+  .game-card {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--panel-border);
+    border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden;
+  }
+  .game-card:hover {
+    background: rgba(0, 240, 255, 0.1); border-color: var(--primary);
+    transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 25px rgba(0, 240, 255, 0.2);
+  }
+  .game-card.selected {
+    background: rgba(255, 0, 127, 0.2); border-color: var(--secondary);
+    box-shadow: 0 0 20px var(--secondary-glow);
+  }
+  .game-icon { font-size: 2rem; }
+  .game-info h3 { font-size: 1rem; font-weight: 700; color: #fff; }
+  .game-info p { font-size: 0.75rem; color: #8a99ad; }
+
+  /* PLATEAU DE JEU TABLE UNO 3D IMMERSIVE */
+  #gameArena {
+    position: relative; width: 100vw; height: 100vh; max-width: 950px; max-height: 620px;
+    background: radial-gradient(circle, #1a233a 0%, #0a0d18 80%);
+    border: 2px solid var(--primary); border-radius: 40px;
+    box-shadow: inset 0 0 80px rgba(0, 240, 255, 0.15), 0 0 50px rgba(0, 0, 0, 0.8);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+
+  .room-badge {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6); border: 1px solid var(--primary);
+    padding: 6px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem; letter-spacing: 2px; color: var(--primary); box-shadow: 0 0 10px var(--primary-glow);
+  }
+
+  /* AVATARS EN 4 COINS DE TABLE */
+  .cyber-avatar {
+    position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: 0.3s;
+  }
+  .avatar-ring {
+    width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(12, 16, 32, 0.8); display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); position: relative;
+  }
+  .avatar-label {
+    font-size: 0.8rem; font-weight: 700; margin-top: 6px;
+    background: rgba(0, 0, 0, 0.7); padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .cyber-avatar.active .avatar-ring {
+    border-color: var(--yellow); box-shadow: 0 0 25px var(--yellow); animation: activeGlow 1.2s infinite alternate;
+  }
+  @keyframes activeGlow { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+  .pos-bottom { bottom: 20px; }
+  .pos-top { top: 20px; }
+  .pos-left { left: 20px; }
+  .pos-right { right: 20px; }
+
+  /* CENTRE DE TABLE : PIOCHE ET TALLON */
+  .table-center { display: flex; gap: 24px; align-items: center; justify-content: center; z-index: 5; }
+
+  /* CARTES UNO NEON */
   .uno-card {
-    width: var(--card-width);
-    height: var(--card-height);
-    border-radius: 8px;
-    border: 2px solid #fff;
-    background: #1c1c1e;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    font-weight: 900;
-    box-shadow: -2px 5px 10px rgba(0,0,0,0.4);
-    cursor: pointer;
-    transition: transform 0.2s;
+    width: var(--card-w); height: var(--card-h); border-radius: 10px;
+    border: 2px solid #fff; background: #0c1020;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900;
+    box-shadow: -4px 8px 15px rgba(0, 0, 0, 0.6); cursor: pointer; transition: all 0.25s ease;
   }
-
-  .uno-card.red { background: var(--red); }
-  .uno-card.blue { background: var(--blue); }
-  .uno-card.green { background: var(--green); }
-  .uno-card.yellow { background: var(--yellow); color: #000; }
-  .uno-card.back { background: repeating-linear-gradient(45deg, #ff2d55, #ff2d55 10px, #000 10px, #000 20px); border-color: #fff; }
-
-  .uno-card:hover { transform: translateY(-10px) scale(1.05); }
-
-  /* MAIN DE CARTES DU JOUEUR (BAS DE L'ÉCRAN) */
-  .my-hand {
-    position: absolute;
-    bottom: 80px;
-    display: flex;
-    gap: -15px;
-    max-width: 90%;
-    overflow-x: auto;
-    padding: 10px;
-    z-index: 20;
+  .uno-card.red { background: linear-gradient(135deg, #ff3b30, #990000); border-color: #ff9999; }
+  .uno-card.blue { background: linear-gradient(135deg, #007aff, #003399); border-color: #99ccff; }
+  .uno-card.green { background: linear-gradient(135deg, #34c759, #006622); border-color: #99ffbb; }
+  .uno-card.yellow { background: linear-gradient(135deg, #ffcc00, #997700); border-color: #fffae6; color: #000; }
+  .uno-card.back {
+    background: repeating-linear-gradient(45deg, var(--secondary), var(--secondary) 10px, #000 10px, #000 20px);
+    border-color: #fff;
   }
+  .uno-card:hover { transform: translateY(-12px) scale(1.08); box-shadow: 0 15px 30px rgba(0, 240, 255, 0.4); }
 
-  .my-hand .uno-card { margin-left: -20px; }
-  .my-hand .uno-card:first-child { margin-left: 0; }
-
-  /* BOUTON UNO EN GRAND */
-  .btn-uno {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 65px; height: 65px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff9500, #ff2d55);
-    border: 3px solid #fff;
-    color: #fff; font-weight: 900; font-size: 1.1rem;
-    box-shadow: 0 8px 20px rgba(255,45,85,0.6);
-    cursor: pointer; z-index: 30;
+  /* MAIN DE CARTES DU JOUEUR */
+  .player-hand {
+    position: absolute; bottom: 85px; display: flex; gap: -20px;
+    max-width: 88%; overflow-x: auto; padding: 12px; z-index: 20;
   }
+  .player-hand .uno-card { margin-left: -22px; }
+  .player-hand .uno-card:first-child { margin-left: 0; }
 
-  .room-tag {
-    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-    background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 12px; font-weight: 800; font-size: 0.9rem;
+  /* BOUTON BOOSTER UNO */
+  .uno-trigger {
+    position: absolute; bottom: 24px; right: 24px; width: 75px; height: 75px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--secondary), #ff0040);
+    border: 3px solid #fff; color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900;
+    font-size: 1.1rem; box-shadow: 0 0 30px var(--secondary-glow); cursor: pointer; z-index: 30; transition: 0.2s;
   }
+  .uno-trigger:active { transform: scale(0.9); }
 
   .hidden { display: none !important; }
-  .credit { position: fixed; bottom: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; font-weight: 800; }
+
+  /* SIGNATURE BADGE FOTTER */
+  .cyber-footer {
+    position: relative; z-index: 10; margin-top: 20px;
+    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase; text-align: center;
+    color: #fff; background: rgba(0, 240, 255, 0.08); padding: 8px 24px;
+    border-radius: 30px; border: 1px solid var(--primary-glow);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+  }
 </style>
 </head>
 <body>
 
-<!-- ÉCRAN D'ACCUEIL -->
-<div class="lobby-card" id="lobby">
-  <h1>🎴 UNO ONLINE</h1>
-  <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">Joue au UNO entre frères jusqu'à 4 joueurs !</p>
-  
-  <input type="text" id="pName" placeholder="Ton Pseudo" value="Jad" />
-  <button class="btn" onclick="createGame()">Créer une Table</button>
-  <input type="text" id="cInput" placeholder="Code de Table" style="margin-top:15px;" />
-  <button class="btn sec" onclick="joinGame()">Rejoindre une Table</button>
-</div>
+<canvas id="bgCanvas"></canvas>
 
-<!-- PLATEAU DE JEU UNO -->
-<div id="gameTable" class="hidden">
-  <div class="room-tag" id="roomCode">CODE : ------</div>
-
-  <!-- JOUEURS DISPOSÉS SUR LA TABLE -->
-  <div class="avatar p-bottom" id="av0"><div class="avatar-img">🧙‍♂️</div><div class="avatar-name" id="n0">Toi</div></div>
-  <div class="avatar p-top" id="av1"><div class="avatar-img">🥷</div><div class="avatar-name" id="n1">En attente...</div></div>
-  <div class="avatar p-left" id="av2"><div class="avatar-img">🦸‍♂️</div><div class="avatar-name" id="n2">En attente...</div></div>
-  <div class="avatar p-right" id="av3"><div class="avatar-img">🤖</div><div class="avatar-name" id="n3">En attente...</div></div>
-
-  <!-- CENTRE : PIOCHE ET TALLON (DÉFAUSSE) -->
-  <div class="center-deck">
-    <div class="uno-card back" onclick="drawCard()" title="Piocher une carte"></div>
-    <div class="uno-card red" id="discardPile">8</div>
+<!-- LOBBY PRINCIPAL -->
+<div class="cyber-panel" id="lobbyPanel">
+  <div class="title-container">
+    <div class="cyber-title">CYBER-GAME PORTAL</div>
+    <div class="cyber-subtitle">Défie tes frères en temps réel jusqu'à 4 joueurs</div>
   </div>
 
-  <!-- MAIN DE CARTES DU JOUEUR -->
-  <div class="my-hand" id="myHand"></div>
+  <input type="text" class="cyber-input" id="playerName" placeholder="TON PSEUDO" maxlength="12" value="Jad" />
 
-  <!-- BOUTON UNO -->
-  <button class="btn-uno" onclick="sayUno()">UNO!</button>
+  <div style="display:flex; gap:10px; margin-top:14px;">
+    <button class="cyber-btn" onclick="toggleMode('create')">➕ CRÉER UN SALON</button>
+    <button class="cyber-btn secondary" onclick="toggleMode('join')">🔗 REJOINDRE</button>
+  </div>
+
+  <!-- SECTEUR CRÉATION DE JEU -->
+  <div id="createSection" class="hidden">
+    <div class="category-filter">
+      <div class="chip active" onclick="filterGames('all', this)">TOUS (12)</div>
+      <div class="chip" onclick="filterGames('cards', this)">CARTES</div>
+      <div class="chip" onclick="filterGames('reflex', this)">RÉFLEXION</div>
+    </div>
+
+    <div class="games-grid" id="gamesGrid"></div>
+    <button class="cyber-btn pink" id="btnLaunch" onclick="initRoom()" disabled>LANCER LE SALON</button>
+  </div>
+
+  <!-- SECTEUR REJOINDRE -->
+  <div id="joinSection" class="hidden" style="margin-top:16px;">
+    <input type="text" class="cyber-input" id="roomInput" placeholder="CODE DE SALON (EX: 7F3K2A)" maxlength="6" />
+    <button class="cyber-btn pink" onclick="connectRoom()">ENTRER DANS LA PARTIE</button>
+  </div>
 </div>
 
-<div class="credit">DÉVELOPPÉ PAR J.LSRY63</div>
+<!-- PLATEAU DE JEU MULTIJOUEURS -->
+<div id="gameArena" class="hidden">
+  <div class="room-badge" id="badgeRoom">SALON : ------</div>
+
+  <!-- 4 POSITIONS DES JOUEURS -->
+  <div class="cyber-avatar pos-bottom" id="slot0"><div class="avatar-ring">🧙‍♂️</div><div class="avatar-label" id="lbl0">Toi</div></div>
+  <div class="cyber-avatar pos-top" id="slot1"><div class="avatar-ring">🥷</div><div class="avatar-label" id="lbl1">En attente...</div></div>
+  <div class="cyber-avatar pos-left" id="slot2"><div class="avatar-ring">🦸‍♂️</div><div class="avatar-label" id="lbl2">En attente...</div></div>
+  <div class="cyber-avatar pos-right" id="slot3"><div class="avatar-ring">🤖</div><div class="avatar-label" id="lbl3">En attente...</div></div>
+
+  <!-- PIOCHE ET TALLON CENTRAL -->
+  <div class="table-center">
+    <div class="uno-card back" onclick="drawUnoCard()" title="Piocher"></div>
+    <div class="uno-card red" id="tablePile">8</div>
+  </div>
+
+  <!-- MAIN DU JOUEUR -->
+  <div class="player-hand" id="handBox"></div>
+
+  <!-- BOUTON UNO -->
+  <button class="uno-trigger" onclick="shoutUno()">UNO!</button>
+</div>
+
+<div class="cyber-footer">DÉVELOPPÉ PAR J.LSRY63</div>
 
 <script>
+/* ANIMATION PARTICULES BACKGROUND CANVAS */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let pts = [];
+
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.onresize = resizeCanvas; resizeCanvas();
+
+for(let i=0; i<60; i++) {
+  pts.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.8, vy: (Math.random()-0.5)*0.8 });
+}
+
+function animCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(0, 240, 255, 0.4)';
+  pts.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+  });
+  requestAnimationFrame(animCanvas);
+}
+animCanvas();
+
+/* FIREBASE CONFIGURATION */
 const firebaseConfig = {
   apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
   authDomain: "jeu-entre-freres.firebaseapp.com",
@@ -221,571 +329,165 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let myId = 'p_' + Math.random().toString(36).slice(2,8);
-let roomCode = null, unsub = null;
+let currentRoom = null, unsub = null, chosenGame = null;
+
+const CATALOG = [
+  { id: 'uno', name: '🎴 UNO Online', desc: '1-4 Joueurs • Jeu de cartes culte', type: 'cards' },
+  { id: 'cards_battle', name: '🃏 Bataille de Cartes', desc: '1-4 Joueurs • Rapidité & Chance', type: 'cards' },
+  { id: 'bac', name: '📝 Petit Bac', desc: '1-4 Joueurs • Jeu de mots en direct', type: 'reflex' },
+  { id: 'fast_click', name: '⚡ Tap Rapide', desc: '1-4 Joueurs • Test de réflexes', type: 'reflex' },
+  { id: 'xo', name: '⭕❌ Morpion 3D', desc: '2 Joueurs • Réfléchis vite', type: 'reflex' },
+  { id: 'p4', name: '🔴🟡 Puissance 4', desc: '2 Joueurs • Alignement stratégique', type: 'reflex' },
+  { id: 'rps', name: '✊✋✌️ Chifoumi', desc: '2-4 Joueurs • Duel classique', type: 'cards' },
+  { id: 'dice', name: '🎲 Course de Dés', desc: '1-4 Joueurs • Atteins 100 points', type: 'reflex' },
+  { id: 'memory', name: '🧠 Memory Flash', desc: '1-4 Joueurs • Retiens la suite', type: 'reflex' },
+  { id: 'guess', name: '🔢 Devine Nombre', desc: '1-4 Joueurs • Plus grand ou plus petit', type: 'reflex' },
+  { id: 'word', name: '🔤 Chaîne de Mots', desc: '1-4 Joueurs • Vocabulaire chrono', type: 'reflex' },
+  { id: 'quiz', name: '❓ Quiz Speed', desc: '1-4 Joueurs • Culture générale', type: 'reflex' }
+];
 
 const colors = ['red', 'blue', 'green', 'yellow'];
 const numbers = ['0','1','2','3','4','5','6','7','8','9','🚫','🔄'];
 
-function createGame() {
-  const name = document.getElementById('pName').value.trim() || 'Joueur 1';
-  roomCode = Math.random().toString(36).slice(2,8).toUpperCase();
+function renderGamesGrid(filter = 'all') {
+  const grid = document.getElementById('gamesGrid'); grid.innerHTML = '';
+  CATALOG.filter(g => filter === 'all' || g.type === filter).forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.onclick = () => {
+      document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      chosenGame = g.id;
+      document.getElementById('btnLaunch').disabled = false;
+    };
+    card.innerHTML = `<div class="game-icon">${g.name.split(' ')[0]}</div><div class="game-info"><h3>${g.name.substring(3)}</h3><p>${g.desc}</p></div>`;
+    grid.appendChild(card);
+  });
+}
+renderGamesGrid();
 
-  const initialCard = { color: colors[Math.floor(Math.random()*4)], val: Math.floor(Math.random()*9).toString() };
-
-  db.collection('rooms').doc(roomCode).set({
-    players: [{ id: myId, name: name }],
-    turn: 0,
-    discard: initialCard,
-    hands: { [myId]: generateHand() }
-  }).then(() => enterTable());
+function filterGames(type, el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderGamesGrid(type);
 }
 
-function joinGame() {
-  const code = document.getElementById('cInput').value.trim().toUpperCase();
-  const name = document.getElementById('pName').value.trim() || 'Joueur';
-  if(!code) return alert("Rentre un code de table.");
+function toggleMode(mode) {
+  if(mode === 'create') {
+    document.getElementById('createSection').classList.remove('hidden');
+    document.getElementById('joinSection').classList.add('hidden');
+  } else {
+    document.getElementById('joinSection').classList.remove('hidden');
+    document.getElementById('createSection').classList.add('hidden');
+  }
+}
+
+function genHand() {
+  let h = []; for(let i=0; i<7; i++) h.push({ color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] });
+  return h;
+}
+
+function initRoom() {
+  const name = document.getElementById('playerName').value.trim() || 'Joueur 1';
+  currentRoom = Math.random().toString(36).slice(2,8).toUpperCase();
+  const card = { color: colors[Math.floor(Math.random()*4)], val: Math.floor(Math.random()*9).toString() };
+
+  db.collection('rooms').doc(currentRoom).set({
+    game: chosenGame,
+    players: [{ id: myId, name }],
+    turn: 0,
+    discard: card,
+    hands: { [myId]: genHand() }
+  }).then(() => launchArena());
+}
+
+function connectRoom() {
+  const code = document.getElementById('roomInput').value.trim().toUpperCase();
+  const name = document.getElementById('playerName').value.trim() || 'Joueur';
+  if(!code) return alert("Rentre un code valide.");
 
   const ref = db.collection('rooms').doc(code);
   ref.get().then(doc => {
-    if(!doc.exists) return alert("Table introuvable !");
+    if(!doc.exists) return alert("Salon introuvable !");
     let d = doc.data();
-    if(d.players.length >= 4 && !d.players.find(p=>p.id===myId)) return alert("Table pleine !");
-
-    let players = d.players;
-    if(!players.find(p=>p.id===myId)) players.push({ id: myId, name: name });
+    let players = d.players || [];
+    if(players.length >= 4 && !players.find(p=>p.id===myId)) return alert("Salon complet !");
+    if(!players.find(p=>p.id===myId)) players.push({ id: myId, name });
 
     let hands = d.hands || {};
-    if(!hands[myId]) hands[myId] = generateHand();
+    if(!hands[myId]) hands[myId] = genHand();
 
     ref.update({ players, hands }).then(() => {
-      roomCode = code;
-      enterTable();
+      currentRoom = code; launchArena();
     });
   });
 }
 
-function generateHand() {
-  let hand = [];
-  for(let i=0; i<7; i++) {
-    hand.push({ color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] });
-  }
-  return hand;
-}
-
-function enterTable() {
-  document.getElementById('lobby').classList.add('hidden');
-  document.getElementById('gameTable').classList.remove('hidden');
-  document.getElementById('roomCode').textContent = "TABLE : " + roomCode;
+function launchArena() {
+  document.getElementById('lobbyPanel').classList.add('hidden');
+  document.getElementById('gameArena').classList.remove('hidden');
+  document.getElementById('badgeRoom').textContent = "SALON : " + currentRoom;
 
   if(unsub) unsub();
-  unsub = db.collection('rooms').doc(roomCode).onSnapshot(snap => {
-    if(snap.exists) render(snap.data());
+  unsub = db.collection('rooms').doc(currentRoom).onSnapshot(snap => {
+    if(snap.exists) updateUi(snap.data());
   });
 }
 
-function render(d) {
-  // Placement des pseudos sur les avatars
+function updateUi(d) {
   d.players.forEach((p, idx) => {
-    let nameEl = document.getElementById('n' + idx);
-    if(nameEl) nameEl.textContent = p.name + (p.id === myId ? ' (Toi)' : '');
-    let av = document.getElementById('av' + idx);
-    if(av) av.classList.toggle('active', d.turn === idx);
+    let lbl = document.getElementById('lbl' + idx);
+    if(lbl) lbl.textContent = p.name + (p.id === myId ? ' (Toi)' : '');
+    let slot = document.getElementById('slot' + idx);
+    if(slot) slot.classList.toggle('active', d.turn === idx);
   });
 
-  // Mettre à jour la défausse au centre
-  let pile = document.getElementById('discardPile');
+  let pile = document.getElementById('tablePile');
   pile.className = 'uno-card ' + d.discard.color;
   pile.textContent = d.discard.val;
 
-  // Afficher la main de cartes du joueur
-  let handBox = document.getElementById('myHand');
-  handBox.innerHTML = '';
-  let myHand = d.hands[myId] || [];
-
-  myHand.forEach((card, idx) => {
+  let handBox = document.getElementById('handBox'); handBox.innerHTML = '';
+  (d.hands[myId] || []).forEach((cData, i) => {
     let c = document.createElement('div');
-    c.className = 'uno-card ' + card.color;
-    c.textContent = card.val;
-    c.onclick = () => playCard(card, idx, d);
+    c.className = 'uno-card ' + cData.color;
+    c.textContent = cData.val;
+    c.onclick = () => playCard(cData, i, d);
     handBox.appendChild(c);
   });
 }
 
-function playCard(card, cardIdx, d) {
-  let myTurnIndex = d.players.findIndex(p => p.id === myId);
-  if(d.turn !== myTurnIndex) return alert("Ce n'est pas ton tour !");
+function playCard(card, idx, d) {
+  let pIdx = d.players.findIndex(p => p.id === myId);
+  if(d.turn !== pIdx) return alert("Attends ton tour !");
 
-  // Vérifier la règle UNO (même couleur ou même symbole/valeur)
   if(card.color === d.discard.color || card.val === d.discard.val) {
-    let newHand = [...d.hands[myId]];
-    newHand.splice(cardIdx, 1);
-
+    let newHand = [...d.hands[myId]]; newHand.splice(idx, 1);
     let nextTurn = (d.turn + 1) % d.players.length;
-
-    db.collection('rooms').doc(roomCode).update({
-      discard: card,
-      [`hands.${myId}`]: newHand,
-      turn: nextTurn
+    db.collection('rooms').doc(currentRoom).update({
+      discard: card, [`hands.${myId}`]: newHand, turn: nextTurn
     });
   } else {
-    alert("Tu ne peux jouer cette carte que si elle est de la même couleur ou du même chiffre/symbole !");
+    alert("Carte incompatible !");
   }
 }
 
-function drawCard() {
-  db.collection('rooms').doc(roomCode).get().then(doc => {
+function drawUnoCard() {
+  db.collection('rooms').doc(currentRoom).get().then(doc => {
     let d = doc.data();
-    let myTurnIndex = d.players.findIndex(p => p.id === myId);
-    if(d.turn !== myTurnIndex) return alert("Ce n'est pas ton tour pour piocher !");
+    let pIdx = d.players.findIndex(p => p.id === myId);
+    if(d.turn !== pIdx) return alert("Attends ton tour !");
 
-    let newCard = { color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] };
-    let newHand = [...(d.hands[myId] || []), newCard];
-
+    let card = { color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] };
+    let newHand = [...(d.hands[myId] || []), card];
     let nextTurn = (d.turn + 1) % d.players.length;
 
-    db.collection('rooms').doc(roomCode).update({
-      [`hands.${myId}`]: newHand,
-      turn: nextTurn
+    db.collection('rooms').doc(currentRoom).update({
+      [`hands.${myId}`]: newHand, turn: nextTurn
     });
   });
 }
 
-function sayUno() {
-  alert("📣 UNO !!");
-}
-</script>
-</body>
-</html>    justify-content: center;
-    padding: 20px 16px;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .bg-animation {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    z-index: 0;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 50%, #12162d 0%, #080911 100%);
-    pointer-events: none !important;
-  }
-
-  .orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.55;
-    animation: float 18s infinite ease-in-out alternate;
-    pointer-events: none !important;
-  }
-
-  .orb-1 { width: 350px; height: 350px; background: #7c5cff; top: -50px; left: -50px; }
-  .orb-2 { width: 400px; height: 400px; background: #ff5c8a; bottom: -100px; right: -50px; animation-delay: -5s; }
-  .orb-3 { width: 300px; height: 300px; background: #00d2ff; top: 40%; left: 60%; animation-delay: -10s; }
-
-  @keyframes float {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(60px, 80px) scale(1.15); }
-    100% { transform: translate(-40px, 40px) scale(0.9); }
-  }
-
-  h1 {
-    font-size: 2rem; font-weight: 800;
-    background: linear-gradient(135deg, #fff 30%, var(--muted));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 6px; text-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    position: relative; z-index: 10;
-  }
-
-  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; text-align: center; position: relative; z-index: 10; }
-
-  .card {
-    position: relative; z-index: 10;
-    background: var(--card-bg);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius);
-    padding: 24px; width: 100%; max-width: 480px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  }
-
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 14px; border: none; border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent), #5a38ff);
-    color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer;
-    margin-top: 12px; box-shadow: 0 8px 20px var(--accent-glow);
-    transition: all 0.2s ease;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn.secondary { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--card-border); color: var(--text); box-shadow: none; }
-  .btn.pink { background: linear-gradient(135deg, var(--accent2), #e03063); box-shadow: 0 8px 20px var(--accent2-glow); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
-
-  input[type=text] {
-    width: 100%; padding: 12px 14px; border-radius: 12px;
-    border: 1px solid var(--card-border); background: rgba(0, 0, 0, 0.4);
-    color: var(--text); font-size: 1rem; outline: none; margin-top: 8px;
-  }
-
-  .games-pick {
-    display: grid; gap: 8px; margin-top: 12px; max-height: 220px; overflow-y: auto; padding-right: 4px;
-  }
-  .game-opt {
-    padding: 12px 14px; border-radius: 12px; border: 1px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.04); cursor: pointer; font-weight: 600; font-size: 0.95rem;
-  }
-  .game-opt.selected { border-color: var(--accent); background: rgba(124, 92, 255, 0.3); }
-
-  .player-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 12px 0; }
-  .player-tag {
-    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
-    padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; text-align: center;
-  }
-
-  .roomcode {
-    font-size: 1.8rem; letter-spacing: 6px; font-weight: 900; text-align: center;
-    background: rgba(0, 0, 0, 0.4); border: 1px dashed var(--accent); border-radius: 14px;
-    padding: 10px; margin: 12px 0;
-  }
-
-  .status { margin: 12px 0; font-size: 1.05rem; font-weight: 700; text-align: center; min-height: 26px; color: var(--yellow); }
-
-  .game-grid { display: grid; gap: 8px; margin: 16px auto; justify-content: center; }
-  .cell {
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255, 255, 255, 0.05); border-radius: 12px;
-    font-weight: 800; cursor: pointer; user-select: none; border: 1px solid var(--card-border);
-  }
-
-  #xoBoard { grid-template-columns: repeat(3, 75px); }
-  #xoBoard .cell { width: 75px; height: 75px; font-size: 2rem; }
-
-  #p4Board { grid-template-columns: repeat(7, 40px); gap: 6px; }
-  #p4Board .cell { width: 40px; height: 40px; border-radius: 50%; }
-  #p4Cols { display: grid; grid-template-columns: repeat(7, 40px); gap: 6px; margin-top: 8px; }
-  #p4Cols button { width: 40px; height: 32px; border-radius: 8px; border: none; background: var(--accent); color: #fff; cursor: pointer; font-weight: 800; }
-
-  .choice-row { display: flex; gap: 10px; margin-top: 12px; }
-  .choice-btn { flex: 1; padding: 14px; border-radius: 14px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.05); font-size: 1.8rem; cursor: pointer; }
-
-  .bac-letter { font-size: 2.5rem; font-weight: 900; text-align: center; color: var(--accent2); margin-bottom: 12px; }
-  .bac-field { margin-bottom: 10px; }
-  .bac-field label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 4px; }
-
-  .card-display {
-    width: 110px; height: 160px; border-radius: 14px; border: 2px solid var(--card-border);
-    background: rgba(255, 255, 255, 0.1); margin: 16px auto; display: flex;
-    align-items: center; justify-content: center; font-size: 2rem; font-weight: 900;
-  }
-
-  .hidden { display: none !important; }
-  .backlink { color: var(--muted); text-align: center; margin-top: 16px; cursor: pointer; font-size: 0.9rem; }
-
-  .footer-credit {
-    position: relative; z-index: 10; margin-top: 28px; font-size: 1.1rem; font-weight: 900;
-    letter-spacing: 2px; text-transform: uppercase; text-align: center;
-    background: linear-gradient(135deg, #ffffff 20%, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-</style>
-</head>
-<body>
-
-<div class="bg-animation">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
-
-<h1>🎮 Jeux entre frères</h1>
-<p class="subtitle">Multi-jeux en temps réel jusqu'à 4 joueurs !</p>
-
-<!-- ACCUEIL -->
-<div class="card" id="screenHome">
-  <label style="font-size:0.85rem; color:var(--muted);">Ton Pseudo :</label>
-  <input type="text" id="playerNameInput" placeholder="Ex: Joueur 1" maxlength="12" />
-
-  <button class="btn" id="btnShowCreate" onclick="toggleBox('create')">➕ Créer un salon (1 à 4 joueurs)</button>
-  <button class="btn secondary" id="btnShowJoin" onclick="toggleBox('join')">🔗 Rejoindre un salon</button>
-
-  <div id="createBox" class="hidden">
-    <p style="margin-top:16px; font-weight:600; color:var(--muted);">Choisis un jeu :</p>
-    <div class="games-pick">
-      <div class="game-opt" onclick="selectGame(this, 'cards_battle')">🃏 Bataille de Cartes (1-4 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'uno')">🎴 Mini Uno (1-4 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'bac')">📝 Petit Bac (1-4 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'fast_click')">⚡ Tap Rapide (1-4 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'xo')">⭕❌ Morpion (2 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'p4')">🔴🟡 Puissance 4 (2 Joueurs)</div>
-      <div class="game-opt" onclick="selectGame(this, 'rps')">✊✋✌️ Pierre-Feuille-Ciseaux (2-4 Joueurs)</div>
-    </div>
-    <button class="btn pink" id="btnCreateGo" onclick="createRoom()" disabled>Lancer le salon</button>
-  </div>
-
-  <div id="joinBox" class="hidden">
-    <p style="margin-top:16px; font-weight:600; color:var(--muted);">Code du salon :</p>
-    <input type="text" id="joinCodeInput" maxlength="6" placeholder="EX: 7F3K2A" style="text-align:center; letter-spacing:3px; text-transform:uppercase;" />
-    <button class="btn pink" onclick="joinRoom()">Rejoindre le salon</button>
-  </div>
-</div>
-
-<!-- SALON / JEU -->
-<div class="card hidden" id="screenGame">
-  <div class="roomcode" id="roomCodeDisplay"></div>
-  <div class="player-list" id="playerList"></div>
-  <div class="status" id="statusText">Connexion...</div>
-
-  <!-- JEU MORPION -->
-  <div id="xoBoard" class="game-grid hidden"></div>
-
-  <!-- JEU PUISSANCE 4 -->
-  <div id="p4Wrap" class="hidden">
-    <div id="p4Cols"></div>
-    <div id="p4Board" class="game-grid"></div>
-  </div>
-
-  <!-- JEU PIERRE FEUILLE CISEAUX -->
-  <div id="rpsWrap" class="hidden">
-    <div class="choice-row">
-      <button class="choice-btn" onclick="playRPS('rock')">✊</button>
-      <button class="choice-btn" onclick="playRPS('paper')">✋</button>
-      <button class="choice-btn" onclick="playRPS('scissors')">✌️</button>
-    </div>
-  </div>
-
-  <!-- JEU PETIT BAC -->
-  <div id="bacWrap" class="hidden">
-    <div class="bac-letter" id="bacLetter">-</div>
-    <div class="bac-field"><label>Prénom :</label><input type="text" id="bacName" /></div>
-    <div class="bac-field"><label>Pays / Ville :</label><input type="text" id="bacCountry" /></div>
-    <div class="bac-field"><label>Animal :</label><input type="text" id="bacAnimal" /></div>
-    <button class="btn pink" id="btnSubmitBac" onclick="submitBac()">STOP ! Valider mes réponses</button>
-  </div>
-
-  <!-- JEU DE CARTES -->
-  <div id="cardsWrap" class="hidden">
-    <div class="card-display" id="cardDisplay">♥️ A</div>
-    <button class="btn pink" id="btnDrawCard" onclick="drawCard()">🎴 Tirer une carte</button>
-  </div>
-
-  <!-- JEU TAP RAPIDE -->
-  <div id="clickWrap" class="hidden">
-    <button class="btn pink" style="height:100px; font-size:1.4rem;" onclick="tapFast()">CLIQUE ICI LE PLUS VITE !</button>
-  </div>
-
-  <button class="btn secondary hidden" id="btnRestart" onclick="restartGame()">🔄 Rejouer une partie</button>
-  <div class="backlink" onclick="leaveRoom()">← Quitter le salon</div>
-</div>
-
-<div class="footer-credit">Développé par J.LSRY63</div>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
-  authDomain: "jeu-entre-freres.firebaseapp.com",
-  projectId: "jeu-entre-freres",
-  storageBucket: "jeu-entre-freres.firebasestorage.app",
-  messagingSenderId: "360129773422",
-  appId: "1:360129773422:web:e8c7386b0dffd5d38acb7f",
-  measurementId: "G-3RY3JJPYR4"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true });
-
-let playerId = localStorage.getItem('ffg_pid');
-if(!playerId){ playerId = 'p_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ffg_pid', playerId); }
-
-let roomCode = null, unsub = null, selectedGame = null, myName = "Joueur";
-
-const $ = id => document.getElementById(id);
-
-function toggleBox(type) {
-  if(type === 'create') {
-    $('createBox').classList.remove('hidden');$('joinBox').classList.add('hidden');
-  } else {
-    $('joinBox').classList.remove('hidden');$('createBox').classList.add('hidden');
-  }
-}
-
-function selectGame(el, game) {
-  document.querySelectorAll('.game-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedGame = game;
-  $('btnCreateGo').disabled = false;
-}
-
-function genCode() {
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  let c = ''; for(let i=0; i<6; i++) c += chars[Math.floor(Math.random()*chars.length)];
-  return c;
-}
-
-async function createRoom() {
-  myName = $('playerNameInput').value.trim() || "Joueur 1";
-  roomCode = genCode();
-  const alphabet = "ABCDEFGHIJKLMNOPRSTV";
-  const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-
-  const data = {
-    game: selectedGame,
-    status: 'waiting',
-    playerOrder: [playerId],
-    players: { [playerId]: { name: myName, score: 0 } },
-    turn: playerId,
-    board: selectedGame==='xo'? Array(9).fill(null) : selectedGame==='p4'? Array(42).fill(null) : null,
-    choices: {},
-    bacLetter: randomLetter,
-    bacSubmits: {},
-    currentCard: '♥️ A',
-    clicks: {},
-    winner: null
-  };
-  await db.collection('rooms').doc(roomCode).set(data);
-  enterRoom(roomCode);
-}
-
-async function joinRoom() {
-  myName = $('playerNameInput').value.trim() || "Joueur";
-  const code = $('joinCodeInput').value.trim().toUpperCase();
-  if(code.length < 4) return alert('Code invalide.');
-  const ref = db.collection('rooms').doc(code);
-
-  try {
-    await db.runTransaction(async (tx) => {
-      const doc = await tx.get(ref);
-      if(!doc.exists) throw new Error('notfound');
-      const d = doc.data();
-      if(d.playerOrder.length >= 4 && !d.playerOrder.includes(playerId)) throw new Error('full');
-      
-      let playerOrder = d.playerOrder;
-      if(!playerOrder.includes(playerId)) playerOrder.push(playerId);
-
-      let players = d.players || {};
-      players[playerId] = { name: myName, score: 0 };
-
-      tx.update(ref, { playerOrder, players, status: playerOrder.length > 1 ? 'playing' : 'waiting' });
-    });
-  } catch(e) {
-    if(e.message==='notfound') return alert("Salon introuvable.");
-    if(e.message==='full') return alert("Salon plein (4 joueurs max).");
-    return alert('Erreur : ' + e.message);
-  }
-  roomCode = code;
-  enterRoom(roomCode);
-}
-
-function enterRoom(code) {
-  $('screenHome').classList.add('hidden');
-  $('screenGame').classList.remove('hidden');$('roomCodeDisplay').textContent = code;
-  if(unsub) unsub();
-  unsub = db.collection('rooms').doc(code).onSnapshot(snap => {
-    if(!snap.exists) return;
-    render(snap.data());
-  });
-}
-
-function leaveRoom() {
-  if(unsub) unsub();
-  $('screenGame').classList.add('hidden');$('screenHome').classList.remove('hidden');
-}
-
-function render(d) {
-  const plist = $('playerList'); plist.innerHTML = '';
-  d.playerOrder.forEach((pid) => {
-    const tag = document.createElement('div'); tag.className = 'player-tag';
-    const p = d.players[pid] || {};
-    tag.textContent = `${p.name || 'Joueur'} ${pid===playerId?'(Toi)':''}`;
-    if(d.turn === pid) tag.style.borderColor = 'var(--accent)';
-    plist.appendChild(tag);
-  });
-
-  ['xoBoard','p4Wrap','rpsWrap','bacWrap','cardsWrap','clickWrap'].forEach(id => $(id).classList.add('hidden'));$('btnRestart').classList.toggle('hidden', d.status !== 'finished');
-
-  if(d.status === 'waiting') {
-    $('statusText').textContent = "En attente d'autres joueurs...";
-  } else if(d.status === 'finished') {
-    $('statusText').textContent = d.winner === 'draw' ? 'Égalité ! 🤝' : `Partie terminée ! 🏆`;
-  } else {
-    $('statusText').textContent = d.turn === playerId ? "⚡ À ton tour !" : `Tour de : ${d.players[d.turn]?.name || 'un joueur'}`;
-  }
-
-  if(d.game === 'xo') renderXO(d);
-  else if(d.game === 'p4') renderP4(d);
-  else if(d.game === 'rps') $('rpsWrap').classList.remove('hidden');
-  else if(d.game === 'bac') { $('bacWrap').classList.remove('hidden');$('bacLetter').textContent = d.bacLetter || 'A'; }
-  else if(d.game === 'cards_battle' || d.game === 'uno') { $('cardsWrap').classList.remove('hidden');$('cardDisplay').textContent = d.currentCard || '🃏'; }
-  else if(d.game === 'fast_click') $('clickWrap').classList.remove('hidden');
-}
-
-function renderXO(d) {
-  const box = $('xoBoard'); box.classList.remove('hidden'); box.innerHTML = '';
-  d.board.forEach((val, i) => {
-    const c = document.createElement('div'); c.className = 'cell'; c.textContent = val || '';
-    c.onclick = () => {
-      if(d.status==='finished' || d.turn!==playerId || d.board[i]) return;
-      const nextTurn = d.playerOrder.find(id => id !== playerId) || playerId;
-      const board = [...d.board]; board[i] = playerId === d.playerOrder[0] ? 'X' : 'O';
-      db.collection('rooms').doc(roomCode).update({ board, turn: nextTurn });
-    };
-    box.appendChild(c);
-  });
-}
-
-function renderP4(d) {
-  $('p4Wrap').classList.remove('hidden');
-  const cols = $('p4Cols'); cols.innerHTML = '';
-  for(let c=0; c<7; c++) {
-    const btn = document.createElement('button'); btn.textContent = '↓';
-    btn.onclick = () => {
-      if(d.status==='finished' || d.turn!==playerId) return;
-      const board = [...d.board];
-      let row = -1;
-      for(let r=5; r>=0; r--){ if(!board[r*7+c]){ row=r; break; } }
-      if(row === -1) return;
-      board[row*7+c] = playerId === d.playerOrder[0] ? 'X' : 'O';
-      const nextTurn = d.playerOrder.find(id => id !== playerId) || playerId;
-      db.collection('rooms').doc(roomCode).update({ board, turn: nextTurn });
-    };
-    cols.appendChild(btn);
-  }
-  const board = $('p4Board'); board.innerHTML = '';
-  d.board.forEach((v) => {
-    const cell = document.createElement('div'); cell.className = 'cell';
-    cell.style.background = v==='X' ? 'var(--accent2)' : v==='O' ? 'var(--yellow)' : 'rgba(255,255,255,0.05)';
-    board.appendChild(cell);
-  });
-}
-
-function playRPS(choice) {
-  db.collection('rooms').doc(roomCode).update({ [`choices.${playerId}`]: choice });
-}
-
-function submitBac() {
-  db.collection('rooms').doc(roomCode).update({
-    [`bacSubmits.${playerId}`]: { name: $('bacName').value.trim(), country: $('bacCountry').value.trim(), animal:$('bacAnimal').value.trim() },
-    status: 'finished'
-  });
-}
-
-function drawCard() {
-  const suits = ['♥️','♦️','♣️','♠️']; const vals = ['2','5','7','10','J','Q','K','A'];
-  const card = suits[Math.floor(Math.random()*suits.length)] + ' ' + vals[Math.floor(Math.random()*vals.length)];
-  db.collection('rooms').doc(roomCode).update({ currentCard: card });
-}
-
-function tapFast() {
-  db.collection('rooms').doc(roomCode).update({ [`clicks.${playerId}`]: firebase.firestore.FieldValue.increment(1) });
-}
-
-function restartGame() {
-  const alphabet = "ABCDEFGHIJKLMNOPRSTV";
-  const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-  db.collection('rooms').doc(roomCode).update({
-    board: Array(42).fill(null), status:'playing', choices:{}, bacSubmits:{}, bacLetter: randomLetter, clicks:{}
-  });
-}
+function shoutUno() { alert("📣 UNO !!"); }
 </script>
 </body>
 </html>
