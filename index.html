@@ -21,8 +21,8 @@
     --bg: #05070f;
     --panel-bg: rgba(12, 16, 32, 0.88);
     --panel-border: rgba(0, 240, 255, 0.3);
-    --card-w: 70px;
-    --card-h: 102px;
+    --card-w: 72px;
+    --card-h: 104px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Rajdhani', sans-serif; }
@@ -42,7 +42,7 @@
 
   #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
-  /* LOBBY / PANEL AVEC ANIMATION */
+  /* LOBBY / PANEL */
   .cyber-panel {
     position: relative; z-index: 10; width: 95vw; max-width: 880px;
     background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -83,81 +83,82 @@
   .cyber-btn.pink:hover { box-shadow: 0 0 30px var(--secondary-glow); }
   .cyber-btn.secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; box-shadow: none; }
   .cyber-btn.green { background: linear-gradient(135deg, #34c759, #006622); color: #fff; box-shadow: 0 0 20px rgba(52, 199, 89, 0.4); }
+  .cyber-btn.red { background: linear-gradient(135deg, #ff3b30, #990000); color: #fff; box-shadow: 0 0 20px rgba(255, 59, 48, 0.4); }
   .cyber-btn:active { transform: scale(0.97); }
 
-  /* SECTION ANIMÉE REJOINDRE / CRÉER */
   .animated-box {
     max-height: 0; overflow: hidden; opacity: 0;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .animated-box.open {
-    max-height: 250px; opacity: 1; margin-top: 16px;
-  }
+  .animated-box.open { max-height: 250px; opacity: 1; margin-top: 16px; }
 
-  /* CHOIX DES JOUEURS AVEC ANIMATION D'AGRANDISSEMENT */
   .player-choice-title {
     font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--primary);
     text-align: center; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
   }
-  .player-options-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px;
-  }
+  .player-options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px; }
   .player-card-btn {
     background: rgba(5, 7, 15, 0.8); border: 1px solid var(--panel-border);
     border-radius: 14px; padding: 12px 8px; text-align: center; cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
-  .player-card-btn .num {
-    font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; color: #fff;
-  }
-  .player-card-btn .lbl {
-    font-size: 0.75rem; color: #8a99ad; font-weight: 700; margin-top: 2px;
-  }
+  .player-card-btn .num { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; color: #fff; }
+  .player-card-btn .lbl { font-size: 0.75rem; color: #8a99ad; font-weight: 700; margin-top: 2px; }
   .player-card-btn:hover {
     transform: scale(1.08); border-color: var(--primary);
     background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 20px var(--primary-glow);
   }
-  .player-card-btn:active { transform: scale(0.95); }
 
-  /* PLATEAU DE JEU UNO */
+  /* PLATEAU DE JEU AGRANDI ET BIEN POSITIONNÉ */
   #gameArena {
-    position: relative; width: 100vw; height: 100vh; max-width: 920px; max-height: 600px;
+    position: relative; width: 96vw; height: 85vh; max-width: 1000px; max-height: 700px;
     background: radial-gradient(circle, #1a233a 0%, #0a0d18 80%);
     border: 2px solid var(--primary); border-radius: 36px;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,240,255,0.2);
   }
 
   .room-badge {
-    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: 16px; left: 20px;
     background: rgba(0, 0, 0, 0.6); border: 1px solid var(--primary);
-    padding: 4px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
+    padding: 6px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
     font-size: 0.85rem; color: var(--primary); z-index: 30;
   }
 
-  /* BOUTON DÉMARRER POUR L'HÔTE */
+  /* BOUTON QUITTER EN HAUT À DROITE */
+  .leave-btn {
+    position: absolute; top: 16px; right: 20px; z-index: 30;
+    background: rgba(255, 59, 48, 0.2); border: 1px solid #ff3b30; color: #ff3b30;
+    padding: 6px 14px; border-radius: 20px; font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem; font-weight: 900; cursor: pointer; transition: 0.3s;
+  }
+  .leave-btn:hover { background: #ff3b30; color: #fff; box-shadow: 0 0 15px rgba(255,59,48,0.5); }
+
   .host-controls {
-    position: absolute; top: 55px; left: 50%; transform: translateX(-50%);
-    z-index: 30; text-align: center; width: 80%; max-width: 300px;
+    position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+    z-index: 30; text-align: center; width: 80%; max-width: 250px;
   }
   .waiting-msg {
-    position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--yellow);
-    background: rgba(0,0,0,0.7); padding: 6px 16px; border-radius: 20px; z-index: 30;
+    position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+    font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--yellow);
+    background: rgba(0,0,0,0.8); padding: 6px 16px; border-radius: 20px; z-index: 30;
     border: 1px solid var(--yellow); text-align: center; white-space: nowrap;
   }
 
+  /* AVATARS DES JOUEURS AUX 4 COINS CLAIREMENT ESPACÉS */
   .cyber-avatar { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10; }
   .avatar-ring {
-    width: 55px; height: 55px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
-    background: rgba(12, 16, 32, 0.8); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
-    position: relative;
+    width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(12, 16, 32, 0.9); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+    position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
   .avatar-label {
-    font-size: 0.75rem; font-weight: 700; margin-top: 4px;
-    background: rgba(0, 0, 0, 0.7); padding: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 4px;
+    font-size: 0.8rem; font-weight: 700; margin-top: 6px;
+    background: rgba(0, 0, 0, 0.8); border: 1px solid rgba(255,255,255,0.1);
+    padding: 3px 10px; border-radius: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap;
   }
-  .cyber-avatar.active .avatar-ring { border-color: var(--yellow); box-shadow: 0 0 20px var(--yellow); animation: pulse 1s infinite alternate; }
+  .cyber-avatar.active .avatar-ring { border-color: var(--yellow); box-shadow: 0 0 25px var(--yellow); animation: pulse 1s infinite alternate; }
 
   @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
 
@@ -168,19 +169,21 @@
   }
   .kick-btn:hover { background: #ff0000; transform: scale(1.1); }
 
-  .pos-bottom { bottom: 15px; }
-  .pos-top { top: 15px; }
-  .pos-left { left: 15px; }
-  .pos-right { right: 15px; }
+  /* Positions fixes éloignées pour éviter le chevauchement */
+  .pos-bottom { bottom: 120px; left: 50%; transform: translateX(-50%); }
+  .pos-top { top: 110px; left: 50%; transform: translateX(-50%); }
+  .pos-left { left: 30px; top: 50%; transform: translateY(-50%); }
+  .pos-right { right: 30px; top: 50%; transform: translateY(-50%); }
 
-  .table-center { display: flex; gap: 20px; align-items: center; justify-content: center; z-index: 5; }
+  .table-center { display: flex; gap: 24px; align-items: center; justify-content: center; z-index: 5; margin-top: -20px; }
 
   .uno-card {
     width: var(--card-w); height: var(--card-h); border-radius: 10px;
     border: 2px solid #fff; background: #0c1020; display: flex;
     flex-direction: column; align-items: center; justify-content: center;
-    font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900;
+    font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 900;
     cursor: pointer; transition: 0.25s; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
   }
   .uno-card.blue { background: linear-gradient(135deg, #007aff, #003399); }
   .uno-card.green { background: linear-gradient(135deg, #34c759, #006622); }
@@ -191,19 +194,11 @@
   .uno-card:hover { transform: translateY(-8px); }
 
   .player-hand {
-    position: absolute; bottom: 75px; display: flex;
-    max-width: 88%; overflow-x: auto; padding: 10px; z-index: 20;
+    position: absolute; bottom: 15px; display: flex;
+    max-width: 85%; overflow-x: auto; padding: 10px; z-index: 20;
   }
-  .player-hand .uno-card { margin-left: -20px; }
+  .player-hand .uno-card { margin-left: -22px; }
   .player-hand .uno-card:first-child { margin-left: 0; }
-
-  .uno-trigger {
-    position: absolute; bottom: 20px; right: 20px; width: 65px; height: 65px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--secondary), #ff0040); border: 2px solid #fff;
-    color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem; cursor: pointer; z-index: 30;
-    box-shadow: 0 0 20px var(--secondary-glow); transition: 0.3s;
-  }
-  .uno-trigger:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--secondary-glow); }
 
   .color-picker {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -237,28 +232,17 @@
 
   <input type="text" class="cyber-input" id="playerName" placeholder="TON PSEUDO" maxlength="12" value="Jad" />
 
-  <!-- BOUTON CRÉER AVEC MENU DÉROULANT ANIMÉ -->
   <button class="cyber-btn" onclick="toggleCreateBox()">➕ CRÉER UNE TABLE</button>
   
   <div class="animated-box" id="createBox">
     <div class="player-choice-title">CHOISIS LE NOMBRE DE JOUEURS</div>
     <div class="player-options-grid">
-      <div class="player-card-btn" onclick="initRoom(2)">
-        <div class="num">2</div>
-        <div class="lbl">JOUEURS</div>
-      </div>
-      <div class="player-card-btn" onclick="initRoom(3)">
-        <div class="num">3</div>
-        <div class="lbl">JOUEURS</div>
-      </div>
-      <div class="player-card-btn" onclick="initRoom(4)">
-        <div class="num">4</div>
-        <div class="lbl">JOUEURS</div>
-      </div>
+      <div class="player-card-btn" onclick="initRoom(2)"><div class="num">2</div><div class="lbl">JOUEURS</div></div>
+      <div class="player-card-btn" onclick="initRoom(3)"><div class="num">3</div><div class="lbl">JOUEURS</div></div>
+      <div class="player-card-btn" onclick="initRoom(4)"><div class="num">4</div><div class="lbl">JOUEURS</div></div>
     </div>
   </div>
 
-  <!-- BOUTON REJOINDRE AVEC MENU DÉROULANT ANIMÉ -->
   <button class="cyber-btn secondary" style="margin-top:10px;" onclick="toggleJoinBox()">🔗 REJOINDRE UNE TABLE</button>
 
   <div class="animated-box" id="joinBox">
@@ -270,12 +254,14 @@
 <!-- PLATEAU UNO -->
 <div id="gameArena" class="hidden">
   <div class="room-badge" id="badgeRoom">TABLE : ------</div>
+  <button class="leave-btn" onclick="leaveRoom()">🚪 QUITTER</button>
 
   <div class="host-controls hidden" id="hostControls">
-    <button class="cyber-btn green" onclick="startGame()">▶ DÉMARRER LA PARTIE</button>
+    <button class="cyber-btn green" onclick="startGame()">▶ DÉMARRER</button>
   </div>
   <div class="waiting-msg hidden" id="waitingMsg">⏳ En attente de l'hôte...</div>
 
+  <!-- Positions bien espacées -->
   <div class="cyber-avatar pos-bottom" id="slot0"><div class="avatar-ring">🧙‍♂️</div><div class="avatar-label" id="lbl0">Toi</div></div>
   <div class="cyber-avatar pos-top" id="slot1"><div class="avatar-ring">🥷</div><div class="avatar-label" id="lbl1">En attente...</div></div>
   <div class="cyber-avatar pos-left" id="slot2"><div class="avatar-ring">🦸‍♂️</div><div class="avatar-label" id="lbl2">En attente...</div></div>
@@ -287,7 +273,6 @@
   </div>
 
   <div class="player-hand" id="handBox"></div>
-  <button class="uno-trigger" onclick="shoutUno()">UNO!</button>
 
   <div class="color-picker hidden" id="colorPicker">
     <div class="color-btn" style="background:#007aff" onclick="chooseColor('blue')"></div>
@@ -300,7 +285,6 @@
 <div class="cyber-footer">DÉVELOPPÉ PAR J.LSRY63</div>
 
 <script>
-/* CANVAS BACKGROUND PARTICULES */
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 let pts = [];
@@ -325,7 +309,6 @@ function animCanvas() {
 }
 animCanvas();
 
-/* FIREBASE CONFIGURATION */
 const firebaseConfig = {
   apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
   authDomain: "jeu-entre-freres.firebaseapp.com",
@@ -350,7 +333,6 @@ function toggleJoinBox() {
   document.getElementById('joinBox').classList.toggle('open');
 }
 
-/* DECK OFFICIEL 112 CARTES */
 function buildOfficialDeck() {
   const colors = ['blue', 'green', 'red', 'yellow'];
   let deck = [];
@@ -429,9 +411,7 @@ function connectRoom() {
 }
 
 function startGame() {
-  db.collection('rooms').doc(currentRoom).update({
-    started: true
-  });
+  db.collection('rooms').doc(currentRoom).update({ started: true });
 }
 
 function kickPlayer(targetId) {
@@ -442,10 +422,24 @@ function kickPlayer(targetId) {
     let hands = { ...d.hands };
     delete hands[targetId];
 
-    db.collection('rooms').doc(currentRoom).update({
-      players: players,
-      hands: hands
-    });
+    db.collection('rooms').doc(currentRoom).update({ players: players, hands: hands });
+  });
+}
+
+function leaveRoom() {
+  if(!currentRoom) return;
+  db.collection('rooms').doc(currentRoom).get().then(doc => {
+    if(!doc.exists) { window.location.reload(); return; }
+    let d = doc.data();
+    let players = d.players.filter(p => p.id !== myId);
+    
+    if(players.length === 0) {
+      db.collection('rooms').doc(currentRoom).delete().then(() => window.location.reload());
+    } else {
+      let updates = { players: players };
+      if(d.hostId === myId) updates.hostId = players[0].id; // Transférer l'hôte
+      db.collection('rooms').doc(currentRoom).update(updates).then(() => window.location.reload());
+    }
   });
 }
 
@@ -459,9 +453,8 @@ function launchArena() {
     if(!snap.exists) return;
     let d = snap.data();
     
-    // Vérifier si le joueur a été kické
     if(!d.players.find(p => p.id === myId)) {
-      alert("Tu as été expulsé de la partie par l'hôte.");
+      alert("Tu as quitté ou été expulsé de la partie.");
       window.location.reload();
       return;
     }
@@ -473,7 +466,6 @@ function launchArena() {
 function updateUi(d) {
   const isHost = d.hostId === myId;
 
-  // Affichage du contrôle hôte / attente
   if(!d.started) {
     if(isHost) {
       document.getElementById('hostControls').classList.remove('hidden');
@@ -487,14 +479,9 @@ function updateUi(d) {
     document.getElementById('waitingMsg').classList.add('hidden');
   }
 
-  // Affichage des avatars et gestion de Kick
   for(let i=0; i<4; i++) {
     let slot = document.getElementById('slot' + i);
-    if(i >= d.maxPlayers) {
-      if(slot) slot.style.display = 'none';
-    } else {
-      if(slot) slot.style.display = 'flex';
-    }
+    if(slot) slot.style.display = i >= d.maxPlayers ? 'none' : 'flex';
   }
 
   d.players.forEach((p, idx) => {
@@ -504,7 +491,6 @@ function updateUi(d) {
       let isPlayerHost = p.id === d.hostId;
       lbl.innerHTML = `${isPlayerHost ? '👑 ' : ''}${p.name}${isMe ? ' (Toi)' : ''}`;
 
-      // Afficher bouton Kick si on est l'hôte et que ce n'est pas nous-même
       if(isHost && !isMe && !d.started) {
         let btn = document.createElement('button');
         btn.className = 'kick-btn';
@@ -634,8 +620,6 @@ function drawUnoCard() {
     });
   });
 }
-
-function shoutUno() { alert("📣 UNO !!"); }
 </script>
 </body>
 </html>
