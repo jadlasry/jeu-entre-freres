@@ -110,7 +110,7 @@
     background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 20px var(--primary-glow);
   }
 
-  /* PLATEAU DE JEU AGRANDI ET BIEN POSITIONNÉ */
+  /* PLATEAU DE JEU */
   #gameArena {
     position: relative; width: 96vw; height: 85vh; max-width: 1000px; max-height: 700px;
     background: radial-gradient(circle, #1a233a 0%, #0a0d18 80%);
@@ -126,7 +126,6 @@
     font-size: 0.85rem; color: var(--primary); z-index: 30;
   }
 
-  /* BOUTON QUITTER EN HAUT À DROITE */
   .leave-btn {
     position: absolute; top: 16px; right: 20px; z-index: 30;
     background: rgba(255, 59, 48, 0.2); border: 1px solid #ff3b30; color: #ff3b30;
@@ -146,7 +145,20 @@
     border: 1px solid var(--yellow); text-align: center; white-space: nowrap;
   }
 
-  /* AVATARS DES JOUEURS AUX 4 COINS CLAIREMENT ESPACÉS */
+  /* ÉCRAN DE FIN DE PARTIE */
+  .game-over-banner {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(5, 7, 15, 0.95); border: 2px solid var(--primary); padding: 30px 40px;
+    border-radius: 24px; text-align: center; z-index: 100; box-shadow: 0 0 50px var(--primary-glow);
+    animation: fadeIn 0.4s ease-out; width: 85%; max-width: 450px;
+  }
+  .game-over-banner h2 {
+    font-family: 'Orbitron', sans-serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--yellow);
+  }
+  .game-over-banner p {
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: #fff; line-height: 1.4;
+  }
+
   .cyber-avatar { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 10; }
   .avatar-ring {
     width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2);
@@ -169,7 +181,6 @@
   }
   .kick-btn:hover { background: #ff0000; transform: scale(1.1); }
 
-  /* Positions fixes éloignées pour éviter le chevauchement */
   .pos-bottom { bottom: 120px; left: 50%; transform: translateX(-50%); }
   .pos-top { top: 110px; left: 50%; transform: translateX(-50%); }
   .pos-left { left: 30px; top: 50%; transform: translateY(-50%); }
@@ -261,7 +272,14 @@
   </div>
   <div class="waiting-msg hidden" id="waitingMsg">⏳ En attente de l'hôte...</div>
 
-  <!-- Positions bien espacées -->
+  <!-- BANNIÈRE DE FIN DE PARTIE -->
+  <div class="game-over-banner hidden" id="gameOverBanner">
+    <h2 id="gameOverTitle">FIN DE PARTIE</h2>
+    <p id="gameOverText">Résultat...</p>
+    <button class="cyber-btn" onclick="leaveRoom()">RETOURNER AU MENU</button>
+  </div>
+
+  <!-- Positions des joueurs -->
   <div class="cyber-avatar pos-bottom" id="slot0"><div class="avatar-ring">🧙‍♂️</div><div class="avatar-label" id="lbl0">Toi</div></div>
   <div class="cyber-avatar pos-top" id="slot1"><div class="avatar-ring">🥷</div><div class="avatar-label" id="lbl1">En attente...</div></div>
   <div class="cyber-avatar pos-left" id="slot2"><div class="avatar-ring">🦸‍♂️</div><div class="avatar-label" id="lbl2">En attente...</div></div>
@@ -372,6 +390,7 @@ function initRoom(maxPlayers) {
   db.collection('rooms').doc(currentRoom).set({
     hostId: myId,
     started: false,
+    winner: null,
     deck: deck,
     maxPlayers: maxPlayers,
     players: [{ id: myId, name }],
@@ -427,7 +446,7 @@ function kickPlayer(targetId) {
 }
 
 function leaveRoom() {
-  if(!currentRoom) return;
+  if(!currentRoom) { window.location.reload(); return; }
   db.collection('rooms').doc(currentRoom).get().then(doc => {
     if(!doc.exists) { window.location.reload(); return; }
     let d = doc.data();
@@ -437,7 +456,7 @@ function leaveRoom() {
       db.collection('rooms').doc(currentRoom).delete().then(() => window.location.reload());
     } else {
       let updates = { players: players };
-      if(d.hostId === myId) updates.hostId = players[0].id; // Transférer l'hôte
+      if(d.hostId === myId) updates.hostId = players[0].id;
       db.collection('rooms').doc(currentRoom).update(updates).then(() => window.location.reload());
     }
   });
@@ -465,6 +484,25 @@ function launchArena() {
 
 function updateUi(d) {
   const isHost = d.hostId === myId;
+
+  // Gestion de la fin de partie
+  if(d.winner) {
+    document.getElementById('hostControls').classList.add('hidden');
+    document.getElementById('waitingMsg').classList.add('hidden');
+    document.getElementById('gameOverBanner').classList.remove('hidden');
+
+    let winnerObj = d.players.find(p => p.id === d.winner);
+    let winnerName = winnerObj ? winnerObj.name : "Quelqu'un";
+
+    if(d.winner === myId) {
+      document.getElementById('gameOverTitle').textContent = "VICTOIRE !";
+      document.getElementById('gameOverText').textContent = "Vous avez remporté la manche !";
+    } else {
+      document.getElementById('gameOverTitle').textContent = "MANCHE TERMINÉE";
+      document.getElementById('gameOverText').textContent = `Vous avez perdu ! ${winnerName} a gagné la partie. La partie est finie.`;
+    }
+    return;
+  }
 
   if(!d.started) {
     if(isHost) {
@@ -525,7 +563,7 @@ function getNextTurn(currentTurn, direction, totalPlayers, skip = false) {
 }
 
 function playCard(card, idx, d) {
-  if(!d.started) return alert("La partie n'a pas encore été démarrée par l'hôte !");
+  if(!d.started || d.winner) return;
 
   let pIdx = d.players.findIndex(p => p.id === myId);
   if(d.turn !== pIdx) return alert("Ce n'est pas ton tour !");
@@ -558,6 +596,12 @@ function executeMove(card, idx, d, targetColor) {
   myHand.splice(idx, 1);
   hands[myId] = myHand;
 
+  // VÉRIFICATION DE LA VICTOIRE (Si le joueur n'a plus de cartes)
+  let winnerId = null;
+  if(myHand.length === 0) {
+    winnerId = myId;
+  }
+
   let direction = d.direction || 1;
   let skip = false;
 
@@ -566,26 +610,28 @@ function executeMove(card, idx, d, targetColor) {
 
   let nextTurn = getNextTurn(d.turn, direction, d.players.length, skip);
 
-  if(card.val === '+2') {
-    let victimId = d.players[nextTurn].id;
-    let victimHand = [...(hands[victimId] || [])];
-    for(let i=0; i<2; i++) {
-      if(deck.length === 0) deck = buildOfficialDeck();
-      victimHand.push(deck.pop());
+  if(!winnerId) {
+    if(card.val === '+2') {
+      let victimId = d.players[nextTurn].id;
+      let victimHand = [...(hands[victimId] || [])];
+      for(let i=0; i<2; i++) {
+        if(deck.length === 0) deck = buildOfficialDeck();
+        victimHand.push(deck.pop());
+      }
+      hands[victimId] = victimHand;
+      nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
     }
-    hands[victimId] = victimHand;
-    nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
-  }
 
-  if(card.val === '🌈 +4') {
-    let victimId = d.players[nextTurn].id;
-    let victimHand = [...(hands[victimId] || [])];
-    for(let i=0; i<4; i++) {
-      if(deck.length === 0) deck = buildOfficialDeck();
-      victimHand.push(deck.pop());
+    if(card.val === '🌈 +4') {
+      let victimId = d.players[nextTurn].id;
+      let victimHand = [...(hands[victimId] || [])];
+      for(let i=0; i<4; i++) {
+        if(deck.length === 0) deck = buildOfficialDeck();
+        victimHand.push(deck.pop());
+      }
+      hands[victimId] = victimHand;
+      nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
     }
-    hands[victimId] = victimHand;
-    nextTurn = getNextTurn(nextTurn, direction, d.players.length, false);
   }
 
   db.collection('rooms').doc(currentRoom).update({
@@ -593,14 +639,15 @@ function executeMove(card, idx, d, targetColor) {
     hands: hands,
     deck: deck,
     turn: nextTurn,
-    direction: direction
+    direction: direction,
+    winner: winnerId
   });
 }
 
 function drawUnoCard() {
   db.collection('rooms').doc(currentRoom).get().then(doc => {
     let d = doc.data();
-    if(!d.started) return alert("La partie n'a pas encore été démarrée par l'hôte !");
+    if(!d.started || d.winner) return;
 
     let pIdx = d.players.findIndex(p => p.id === myId);
     if(d.turn !== pIdx) return alert("Ce n'est pas ton tour !");
