@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Jeux entre frères 🎮</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>UNO entre frères 🎴</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -11,30 +11,351 @@
 
 <style>
   :root {
-    --bg-dark: #0b0d19;
-    --card-bg: rgba(23, 27, 52, 0.85);
-    --card-border: rgba(255, 255, 255, 0.15);
-    --text: #f8f9ff;
-    --muted: #a0a7d0;
-    --accent: #7c5cff;
-    --accent-glow: rgba(124, 92, 255, 0.4);
-    --accent2: #ff5c8a;
-    --accent2-glow: rgba(255, 92, 138, 0.4);
-    --yellow: #ffd23f;
-    --radius: 24px;
+    --table-bg: #2a1b18;
+    --table-mat: #1e3a29;
+    --card-width: 58px;
+    --card-height: 85px;
+    --red: #ff3b30;
+    --blue: #007aff;
+    --green: #34c759;
+    --yellow: #ffcc00;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
   body {
     min-height: 100vh;
-    background-color: var(--bg-dark);
-    color: var(--text);
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: #0d0e15;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ACCUEIL / LOBBY */
+  .lobby-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  .lobby-card h1 { font-size: 1.8rem; margin-bottom: 6px; }
+  .lobby-card input {
+    width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px;
+    border: none; background: rgba(0,0,0,0.5); color: #fff; font-size: 1rem; text-align: center;
+  }
+  .btn {
+    width: 100%; padding: 12px; border-radius: 12px; border: none;
+    background: #ff2d55; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 8px;
+  }
+  .btn.sec { background: #5856d6; }
+
+  /* PLATEAU DE JEU UNO (TABLE) */
+  #gameTable {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: 900px;
+    max-height: 600px;
+    background: radial-gradient(circle, #2d5a3f 0%, #173021 70%, #0d1a12 100%);
+    border: 12px solid #3d241d;
+    border-radius: 40px;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* AVATARS DISPOSÉS AROUND LA TABLE */
+  .avatar {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+  }
+  .avatar-img {
+    width: 55px; height: 55px; border-radius: 50%; border: 3px solid #fff;
+    background: #2c2c2e; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  }
+  .avatar-name { font-size: 0.8rem; font-weight: 700; margin-top: 4px; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 10px; }
+  .avatar.active .avatar-img { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: pulse 1s infinite alternate; }
+
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+  .p-bottom { bottom: 15px; }
+  .p-top { top: 15px; }
+  .p-left { left: 15px; }
+  .p-right { right: 15px; }
+
+  /* CENTRE DE TABLE (PIOCHE ET DÉFAUSSE) */
+  .center-deck {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* CARTES UNO */
+  .uno-card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: 8px;
+    border: 2px solid #fff;
+    background: #1c1c1e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 900;
+    box-shadow: -2px 5px 10px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .uno-card.red { background: var(--red); }
+  .uno-card.blue { background: var(--blue); }
+  .uno-card.green { background: var(--green); }
+  .uno-card.yellow { background: var(--yellow); color: #000; }
+  .uno-card.back { background: repeating-linear-gradient(45deg, #ff2d55, #ff2d55 10px, #000 10px, #000 20px); border-color: #fff; }
+
+  .uno-card:hover { transform: translateY(-10px) scale(1.05); }
+
+  /* MAIN DE CARTES DU JOUEUR (BAS DE L'ÉCRAN) */
+  .my-hand {
+    position: absolute;
+    bottom: 80px;
+    display: flex;
+    gap: -15px;
+    max-width: 90%;
+    overflow-x: auto;
+    padding: 10px;
+    z-index: 20;
+  }
+
+  .my-hand .uno-card { margin-left: -20px; }
+  .my-hand .uno-card:first-child { margin-left: 0; }
+
+  /* BOUTON UNO EN GRAND */
+  .btn-uno {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 65px; height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff9500, #ff2d55);
+    border: 3px solid #fff;
+    color: #fff; font-weight: 900; font-size: 1.1rem;
+    box-shadow: 0 8px 20px rgba(255,45,85,0.6);
+    cursor: pointer; z-index: 30;
+  }
+
+  .room-tag {
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 12px; font-weight: 800; font-size: 0.9rem;
+  }
+
+  .hidden { display: none !important; }
+  .credit { position: fixed; bottom: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN D'ACCUEIL -->
+<div class="lobby-card" id="lobby">
+  <h1>🎴 UNO ONLINE</h1>
+  <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px;">Joue au UNO entre frères jusqu'à 4 joueurs !</p>
+  
+  <input type="text" id="pName" placeholder="Ton Pseudo" value="Jad" />
+  <button class="btn" onclick="createGame()">Créer une Table</button>
+  <input type="text" id="cInput" placeholder="Code de Table" style="margin-top:15px;" />
+  <button class="btn sec" onclick="joinGame()">Rejoindre une Table</button>
+</div>
+
+<!-- PLATEAU DE JEU UNO -->
+<div id="gameTable" class="hidden">
+  <div class="room-tag" id="roomCode">CODE : ------</div>
+
+  <!-- JOUEURS DISPOSÉS SUR LA TABLE -->
+  <div class="avatar p-bottom" id="av0"><div class="avatar-img">🧙‍♂️</div><div class="avatar-name" id="n0">Toi</div></div>
+  <div class="avatar p-top" id="av1"><div class="avatar-img">🥷</div><div class="avatar-name" id="n1">En attente...</div></div>
+  <div class="avatar p-left" id="av2"><div class="avatar-img">🦸‍♂️</div><div class="avatar-name" id="n2">En attente...</div></div>
+  <div class="avatar p-right" id="av3"><div class="avatar-img">🤖</div><div class="avatar-name" id="n3">En attente...</div></div>
+
+  <!-- CENTRE : PIOCHE ET TALLON (DÉFAUSSE) -->
+  <div class="center-deck">
+    <div class="uno-card back" onclick="drawCard()" title="Piocher une carte"></div>
+    <div class="uno-card red" id="discardPile">8</div>
+  </div>
+
+  <!-- MAIN DE CARTES DU JOUEUR -->
+  <div class="my-hand" id="myHand"></div>
+
+  <!-- BOUTON UNO -->
+  <button class="btn-uno" onclick="sayUno()">UNO!</button>
+</div>
+
+<div class="credit">DÉVELOPPÉ PAR J.LSRY63</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC1MOyaEvL5PjjtHrbaPpRkZfIy_oXO2e8",
+  authDomain: "jeu-entre-freres.firebaseapp.com",
+  projectId: "jeu-entre-freres",
+  storageBucket: "jeu-entre-freres.firebasestorage.app",
+  messagingSenderId: "360129773422",
+  appId: "1:360129773422:web:e8c7386b0dffd5d38acb7f"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let myId = 'p_' + Math.random().toString(36).slice(2,8);
+let roomCode = null, unsub = null;
+
+const colors = ['red', 'blue', 'green', 'yellow'];
+const numbers = ['0','1','2','3','4','5','6','7','8','9','🚫','🔄'];
+
+function createGame() {
+  const name = document.getElementById('pName').value.trim() || 'Joueur 1';
+  roomCode = Math.random().toString(36).slice(2,8).toUpperCase();
+
+  const initialCard = { color: colors[Math.floor(Math.random()*4)], val: Math.floor(Math.random()*9).toString() };
+
+  db.collection('rooms').doc(roomCode).set({
+    players: [{ id: myId, name: name }],
+    turn: 0,
+    discard: initialCard,
+    hands: { [myId]: generateHand() }
+  }).then(() => enterTable());
+}
+
+function joinGame() {
+  const code = document.getElementById('cInput').value.trim().toUpperCase();
+  const name = document.getElementById('pName').value.trim() || 'Joueur';
+  if(!code) return alert("Rentre un code de table.");
+
+  const ref = db.collection('rooms').doc(code);
+  ref.get().then(doc => {
+    if(!doc.exists) return alert("Table introuvable !");
+    let d = doc.data();
+    if(d.players.length >= 4 && !d.players.find(p=>p.id===myId)) return alert("Table pleine !");
+
+    let players = d.players;
+    if(!players.find(p=>p.id===myId)) players.push({ id: myId, name: name });
+
+    let hands = d.hands || {};
+    if(!hands[myId]) hands[myId] = generateHand();
+
+    ref.update({ players, hands }).then(() => {
+      roomCode = code;
+      enterTable();
+    });
+  });
+}
+
+function generateHand() {
+  let hand = [];
+  for(let i=0; i<7; i++) {
+    hand.push({ color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] });
+  }
+  return hand;
+}
+
+function enterTable() {
+  document.getElementById('lobby').classList.add('hidden');
+  document.getElementById('gameTable').classList.remove('hidden');
+  document.getElementById('roomCode').textContent = "TABLE : " + roomCode;
+
+  if(unsub) unsub();
+  unsub = db.collection('rooms').doc(roomCode).onSnapshot(snap => {
+    if(snap.exists) render(snap.data());
+  });
+}
+
+function render(d) {
+  // Placement des pseudos sur les avatars
+  d.players.forEach((p, idx) => {
+    let nameEl = document.getElementById('n' + idx);
+    if(nameEl) nameEl.textContent = p.name + (p.id === myId ? ' (Toi)' : '');
+    let av = document.getElementById('av' + idx);
+    if(av) av.classList.toggle('active', d.turn === idx);
+  });
+
+  // Mettre à jour la défausse au centre
+  let pile = document.getElementById('discardPile');
+  pile.className = 'uno-card ' + d.discard.color;
+  pile.textContent = d.discard.val;
+
+  // Afficher la main de cartes du joueur
+  let handBox = document.getElementById('myHand');
+  handBox.innerHTML = '';
+  let myHand = d.hands[myId] || [];
+
+  myHand.forEach((card, idx) => {
+    let c = document.createElement('div');
+    c.className = 'uno-card ' + card.color;
+    c.textContent = card.val;
+    c.onclick = () => playCard(card, idx, d);
+    handBox.appendChild(c);
+  });
+}
+
+function playCard(card, cardIdx, d) {
+  let myTurnIndex = d.players.findIndex(p => p.id === myId);
+  if(d.turn !== myTurnIndex) return alert("Ce n'est pas ton tour !");
+
+  // Vérifier la règle UNO (même couleur ou même symbole/valeur)
+  if(card.color === d.discard.color || card.val === d.discard.val) {
+    let newHand = [...d.hands[myId]];
+    newHand.splice(cardIdx, 1);
+
+    let nextTurn = (d.turn + 1) % d.players.length;
+
+    db.collection('rooms').doc(roomCode).update({
+      discard: card,
+      [`hands.${myId}`]: newHand,
+      turn: nextTurn
+    });
+  } else {
+    alert("Tu ne peux jouer cette carte que si elle est de la même couleur ou du même chiffre/symbole !");
+  }
+}
+
+function drawCard() {
+  db.collection('rooms').doc(roomCode).get().then(doc => {
+    let d = doc.data();
+    let myTurnIndex = d.players.findIndex(p => p.id === myId);
+    if(d.turn !== myTurnIndex) return alert("Ce n'est pas ton tour pour piocher !");
+
+    let newCard = { color: colors[Math.floor(Math.random()*4)], val: numbers[Math.floor(Math.random()*numbers.length)] };
+    let newHand = [...(d.hands[myId] || []), newCard];
+
+    let nextTurn = (d.turn + 1) % d.players.length;
+
+    db.collection('rooms').doc(roomCode).update({
+      [`hands.${myId}`]: newHand,
+      turn: nextTurn
+    });
+  });
+}
+
+function sayUno() {
+  alert("📣 UNO !!");
+}
+</script>
+</body>
+</html>    justify-content: center;
     padding: 20px 16px;
     overflow-x: hidden;
     position: relative;
